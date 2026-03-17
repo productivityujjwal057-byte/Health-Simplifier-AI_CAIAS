@@ -1,7 +1,7 @@
 {
-  "name": "healthlens-ai-full",
-  "version": "2.0.0",
-  "description": "AI Health Report Analyzer — 17 Parameters + Condition Detection",
+  "name": "healthlens-ai-v3",
+  "version": "3.0.0",
+  "description": "AI Health Analyzer — Blood (17 params) + Heart & Brain (10 heart + 9 brain conditions)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
