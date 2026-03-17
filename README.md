@@ -1,65 +1,65 @@
-# AI Health Simplifier 🧠
+# AI Health Analyzer 🧠
 
 ## 🚀 Project Overview
-AI Health simplifier is a web-based application designed to simplify medical lab reports and make healthcare insights accessible to everyone.
+AI Health Analyzer is a smart web application that simplifies medical reports and helps users understand their health in simple language.
 
-The system allows users to:
-1. Manually enter medical parameters
-2. Upload lab reports (image/PDF) for automatic analysis using OCR
-
-The goal is to convert complex medical data into **simple, understandable advice** for users, especially in rural and non-technical environments.
+It supports:
+- Manual parameter entry (dynamic selection)
+- OCR-based report scanning (AI-powered)
 
 ---
 
 ## ✨ Features
 
-### ✅ Phase 1: Manual Entry
-- Enter parameters like Hemoglobin, Glucose, Cholesterol
-- Get instant analysis
-- Receive:
+### 🧪 Phase 1: Smart Manual Entry (Enhanced ✅)
+- Select health parameters from a dropdown
+- Enter values dynamically (no fixed inputs)
+- Supports multiple categories:
+  - Blood Count
+  - Glucose & Lipids
+  - Kidney Function
+  - Electrolytes
+- Add multiple parameters before analysis
+- Get:
   - What to **consume**
   - What to **avoid**
-- Visual charts for better understanding
+  - Clean visual charts
 
 ---
 
-### 🤖 Phase 2: AI Report Scanner (NEW)
+### 🤖 Phase 2: AI Report Scanner
 - Upload medical report (image/PDF)
-- Extract text using **Tesseract.js OCR**
-- Automatically detect key parameters
-- Analyze report instantly
-- Generate:
+- Extract text using OCR (Tesseract.js)
+- Detect parameters automatically
+- Provide:
   - Simple explanation (easy English)
-  - Consume / Avoid suggestions
-  - Visual representation
+  - Food suggestions (consume/avoid)
 
 ---
 
 ## 🧠 Problem Statement
-Medical reports are difficult to understand for common people. Many patients, especially in rural areas, cannot interpret values like hemoglobin or cholesterol.
+Medical reports are hard to understand for non-medical users. Many people cannot interpret parameters like cholesterol, glucose, etc.
 
 ---
 
 ## 💡 Solution
-Our system:
-- Converts reports into **simple language**
-- Gives **actionable advice**
-- Removes dependency on technical medical knowledge
+This system:
+- Converts complex reports into **simple advice**
+- Uses **AI + OCR** to automate analysis
+- Helps users take **actionable health decisions**
 
 ---
 
 ## 🛠️ Tech Stack
-- **Frontend:** HTML, CSS, JavaScript  
-- **Backend:** Node.js, Express.js  
-- **OCR:** Tesseract.js  
-- **Visualization:** Chart.js  
-- **Data Handling:** JSON-based logic  
+- Frontend: HTML, CSS, JavaScript  
+- Backend: Node.js, Express.js  
+- OCR: Tesseract.js  
+- Charts: Chart.js  
 
 ---
 
-##  How to Run
+## ⚙️ How to Run
 
-## install dependencies
+```bash
 npm install
-## start backend server 
 node server.js
