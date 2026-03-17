@@ -1,26 +1,37 @@
-# AI Health Analyzer (Hackathon Progress)
+# AI Health Simplifier 🧠
 
-## About
-This is a **web-based AI Health Analyzer prototype**. Currently, the frontend allows **manual entry of lab report parameters** (like Hemoglobin, Glucose, Cholesterol) and provides **suggestions for what to consume and what to avoid**.  
+## About the Project
+**AI Health Analyzer** is a web-based prototype designed to make medical lab reports **easy to understand for everyone**, especially for users with minimal medical knowledge.  
+This hackathon progress version implements **manual entry of medical parameters** and provides **personalized advice on what to consume or avoid** based on the entered values.  
 
-> Hackathon Progress Version: Only manual input feature implemented. OCR & chart visualization coming next.
+> This is the **first milestone** of our project. The next milestone will add **OCR-based automatic report scanning** with AI explanation.
 
-## Features Implemented
-- Manual entry of medical parameters  
-- Backend analysis of the entered values  
-- Simple advice in plain English  
-- Basic styling for usability  
+---
+
+## Features Implemented (Phase 1)
+- **Manual entry** of medical parameters:  
+  - Hemoglobin, Glucose, Cholesterol, Blood Group, etc.
+- **Backend analysis** using Node.js & Express.js  
+- **Consume / Avoid advice** generated for each parameter  
+- **Visual representation** of parameter values using **bar charts** (Chart.js)  
+- **User-friendly interface** with basic styling for quick testing  
+
+---
 
 ## Tech Stack
-- Frontend: HTML, CSS, JavaScript  
-- Backend: Node.js, Express.js (working in progress)  
-- Future: Tesseract.js for OCR, Chart.js for visualization  (working in progress)
+- **Frontend:** HTML, CSS, JavaScript, Chart.js  
+- **Backend:** Node.js, Express.js  
+- **Data:** JSON-based advice logic (for quick prototyping)  
+- **Future:** OCR integration (Tesseract.js) for automatic report scanning  
 
-## How to Run (logic not Added working in progress)
-1. Clone the repository
-2. Open `index.html` in a browser (for manual entry testing)
-3. Enter values and click "Analyze" to see food advice
+---
 
-## Notes
-- This is a **work-in-progress** prototype for the hackathon
-- Styling is being updated and additional features will be added
+## How to Run (Local Setup)
+1. Clone the repository:
+   ```bash
+   git clone <your-repo-url>
+
+## install dependencies
+npm install
+## start backend server 
+node server.js
