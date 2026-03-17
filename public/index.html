@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Health Simplifier AI — Full Blood Report Analyzer</title>
+  <title>HealthLens AI — Complete Health Simplifier</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -12,18 +12,16 @@
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-
-<!-- Background -->
 <div class="bg-mesh"></div>
 
-<!-- Header -->
+<!-- HEADER -->
 <header class="site-header">
   <div class="header-inner">
     <div class="logo">
       <div class="logo-badge">🩺</div>
       <div>
         <div class="logo-title">Health Simplifier <span class="badge-ai">AI</span></div>
-        <div class="logo-sub">Complete Blood Report Analyzer — 17 Parameters</div>
+        <div class="logo-sub">Blood · Heart · Brain — Complete Health Report Analyzer</div>
       </div>
     </div>
   </div>
@@ -33,145 +31,78 @@
 
   <!-- ══ INPUT SECTION ══ -->
   <section class="card input-card" id="inputSection">
-
     <div class="section-head">
-      <h2>📋 Enter Your Blood Report Values</h2>
-      <p>Fill in as many values as available from your report. Leave blank what you don't have — only entered values will be analyzed.</p>
+      <h2>🔬 Analyze Your Health Report</h2>
+      <p>Choose one of three analysis modes below. Enter blood values, upload a lab report, or analyze a heart/brain scan.</p>
     </div>
 
-    <!-- Tabs -->
+    <!-- 3-TAB BAR -->
     <div class="tab-bar">
-      <button class="tab active" id="tabManual" onclick="switchTab('manual')">✏️ Manual Entry</button>
-      <button class="tab" id="tabUpload" onclick="switchTab('upload')">📄 Upload Report</button>
+      <button class="tab active" id="tabManual"  onclick="switchTab('manual')">✏️ Manual Entry</button>
+      <button class="tab"         id="tabUpload"  onclick="switchTab('upload')">📄 Upload Report</button>
+      <!-- <button class="tab"         id="tabHB"      onclick="switchTab('hb')">🫀🧠 Heart &amp; Brain</button> -->
     </div>
 
-    <!-- Manual Panel -->
-    <div id="panelManual" class="tab-panel">
-
-      <!-- Group: Blood -->
-      <div class="param-group">
-        <div class="group-label">🩸 Blood Count</div>
-        <div class="form-grid">
-          <div class="form-field">
-            <label>Hemoglobin (Hb) <span class="unit">g/dL</span></label>
-            <input type="number" id="f_hemoglobin" placeholder="e.g. 13.2" step="0.1"/>
-            <span class="ref">Normal: 12–17.5</span>
-          </div>
-          <div class="form-field">
-            <label>RBC Count <span class="unit">million/µL</span></label>
-            <input type="number" id="f_rbc" placeholder="e.g. 4.8" step="0.1"/>
-            <span class="ref">Normal: 4.0–5.5</span>
-          </div>
-          <div class="form-field">
-            <label>WBC Count <span class="unit">cells/µL</span></label>
-            <input type="number" id="f_wbc" placeholder="e.g. 7500" step="100"/>
-            <span class="ref">Normal: 4000–11000</span>
-          </div>
-          <div class="form-field">
-            <label>Platelets (PLT) <span class="unit">cells/µL</span></label>
-            <input type="number" id="f_platelets" placeholder="e.g. 250000" step="1000"/>
-            <span class="ref">Normal: 150000–400000</span>
-          </div>
-        </div>
+    <!-- ══ TAB 1: MANUAL ENTRY (Dropdown + Value) ══ -->
+    <div id="panelManual" class="tab-panel" style="display:block">
+      <div class="manual-intro">
+        <p>Select a blood parameter from the dropdown, enter its value, and click <strong>Add</strong>. You can add multiple parameters before analyzing.</p>
       </div>
 
-      <!-- Group: Sugar & Lipids -->
-      <div class="param-group">
-        <div class="group-label">🍬 Glucose & Lipids</div>
-        <div class="form-grid">
-          <div class="form-field">
-            <label>Blood Glucose (Fasting) <span class="unit">mg/dL</span></label>
-            <input type="number" id="f_glucose" placeholder="e.g. 95" step="1"/>
-            <span class="ref">Normal fasting: 70–100</span>
-          </div>
-          <div class="form-field">
-            <label>Total Cholesterol <span class="unit">mg/dL</span></label>
-            <input type="number" id="f_cholesterol" placeholder="e.g. 185" step="1"/>
-            <span class="ref">Optimal: &lt;200</span>
-          </div>
-          <div class="form-field">
-            <label>LDL Cholesterol <span class="unit">mg/dL</span></label>
-            <input type="number" id="f_ldl" placeholder="e.g. 110" step="1"/>
-            <span class="ref">Optimal: &lt;100</span>
-          </div>
-          <div class="form-field">
-            <label>HDL Cholesterol <span class="unit">mg/dL</span></label>
-            <input type="number" id="f_hdl" placeholder="e.g. 55" step="1"/>
-            <span class="ref">Good: &gt;60</span>
-          </div>
-          <div class="form-field">
-            <label>Triglycerides <span class="unit">mg/dL</span></label>
-            <input type="number" id="f_triglycerides" placeholder="e.g. 140" step="1"/>
-            <span class="ref">Normal: &lt;150</span>
-          </div>
+      <div class="manual-add-row">
+        <div class="select-wrap">
+          <select id="paramSelect">
+            <option value="">— Select Parameter —</option>
+            <optgroup label="🩸 Blood Count">
+              <option value="hemoglobin">Hemoglobin (Hb) — g/dL</option>
+              <option value="rbc">RBC Count — million/µL</option>
+              <option value="wbc">WBC Count — cells/µL</option>
+              <option value="platelets">Platelets (PLT) — cells/µL</option>
+            </optgroup>
+            <optgroup label="🍬 Glucose & Lipids">
+              <option value="glucose">Blood Glucose (Fasting) — mg/dL</option>
+              <option value="cholesterol">Total Cholesterol — mg/dL</option>
+              <option value="ldl">LDL Cholesterol — mg/dL</option>
+              <option value="hdl">HDL Cholesterol — mg/dL</option>
+              <option value="triglycerides">Triglycerides — mg/dL</option>
+            </optgroup>
+            <optgroup label="🫘 Kidney Function">
+              <option value="bun">Blood Urea Nitrogen (BUN) — mg/dL</option>
+              <option value="creatinine">Creatinine — mg/dL</option>
+              <option value="uricAcid">Uric Acid — mg/dL</option>
+            </optgroup>
+            <optgroup label="⚡ Electrolytes">
+              <option value="sodium">Sodium (Na⁺) — mEq/L</option>
+              <option value="potassium">Potassium (K⁺) — mEq/L</option>
+              <option value="calcium">Calcium (Ca²⁺) — mg/dL</option>
+            </optgroup>
+            <optgroup label="🌿 Vitamins & Hormones">
+              <option value="vitaminD">Vitamin D — ng/mL</option>
+              <option value="tsh">TSH (Thyroid) — mIU/L</option>
+            </optgroup>
+          </select>
         </div>
+        <div class="value-wrap">
+          <input type="number" id="paramValue" placeholder="Enter value…" step="any" onkeydown="if(event.key==='Enter')addParam()"/>
+          <span class="ref-hint" id="refHint">Select a parameter to see reference range</span>
+        </div>
+        <button class="btn-add" onclick="addParam()">＋ Add</button>
       </div>
 
-      <!-- Group: Kidney -->
-      <div class="param-group">
-        <div class="group-label">🫘 Kidney Function</div>
-        <div class="form-grid">
-          <div class="form-field">
-            <label>Blood Urea Nitrogen (BUN) <span class="unit">mg/dL</span></label>
-            <input type="number" id="f_bun" placeholder="e.g. 14" step="0.1"/>
-            <span class="ref">Normal: 7–20</span>
-          </div>
-          <div class="form-field">
-            <label>Creatinine <span class="unit">mg/dL</span></label>
-            <input type="number" id="f_creatinine" placeholder="e.g. 0.9" step="0.1"/>
-            <span class="ref">Normal: 0.6–1.2</span>
-          </div>
-          <div class="form-field">
-            <label>Uric Acid <span class="unit">mg/dL</span></label>
-            <input type="number" id="f_uricAcid" placeholder="e.g. 5.5" step="0.1"/>
-            <span class="ref">Normal: 3.4–7.0</span>
-          </div>
+      <!-- Added parameters list -->
+      <div id="addedParams" class="added-params hidden">
+        <div class="added-head">
+          <span>📋 Parameters Added</span>
+          <button class="btn-clear-all" onclick="clearAllParams()">Clear All</button>
         </div>
+        <div id="paramChips" class="param-chips"></div>
       </div>
 
-      <!-- Group: Electrolytes -->
-      <div class="param-group">
-        <div class="group-label">⚡ Electrolytes</div>
-        <div class="form-grid">
-          <div class="form-field">
-            <label>Sodium (Na⁺) <span class="unit">mEq/L</span></label>
-            <input type="number" id="f_sodium" placeholder="e.g. 140" step="1"/>
-            <span class="ref">Normal: 136–145</span>
-          </div>
-          <div class="form-field">
-            <label>Potassium (K⁺) <span class="unit">mEq/L</span></label>
-            <input type="number" id="f_potassium" placeholder="e.g. 4.2" step="0.1"/>
-            <span class="ref">Normal: 3.5–5.0</span>
-          </div>
-          <div class="form-field">
-            <label>Calcium (Ca²⁺) <span class="unit">mg/dL</span></label>
-            <input type="number" id="f_calcium" placeholder="e.g. 9.5" step="0.1"/>
-            <span class="ref">Normal: 8.5–10.5</span>
-          </div>
-        </div>
-      </div>
+      <div id="manualError" class="field-error hidden"></div>
+    </div>
 
-      <!-- Group: Hormones & Vitamins -->
-      <div class="param-group">
-        <div class="group-label">🌿 Vitamins & Hormones</div>
-        <div class="form-grid">
-          <div class="form-field">
-            <label>Vitamin D <span class="unit">ng/mL</span></label>
-            <input type="number" id="f_vitaminD" placeholder="e.g. 28" step="1"/>
-            <span class="ref">Sufficient: &gt;30</span>
-          </div>
-          <div class="form-field">
-            <label>TSH (Thyroid) <span class="unit">mIU/L</span></label>
-            <input type="number" id="f_tsh" placeholder="e.g. 2.1" step="0.1"/>
-            <span class="ref">Normal: 0.4–4.0</span>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /panelManual -->
-
-    <!-- Upload Panel -->
-    <div id="panelUpload" class="tab-panel hidden">
+    <!-- ══ TAB 2: UPLOAD REPORT ══ -->
+    <div id="panelUpload" class="tab-panel" style="display:none">
       <div class="upload-zone" id="uploadZone"
            onclick="document.getElementById('fileInput').click()"
            ondragover="handleDragOver(event)" ondrop="handleDrop(event)">
@@ -180,33 +111,566 @@
         <p class="upload-sub">Supports JPG, PNG, PDF • Click or drag &amp; drop</p>
         <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none" onchange="handleFileUpload(event)"/>
       </div>
-
       <div id="ocrProgress" class="ocr-progress hidden">
         <div class="ocr-spinner"></div>
         <div class="ocr-text-wrap">
-          <p id="ocrStatus">Initializing OCR engine…</p>
+          <p id="ocrStatus">Initializing OCR…</p>
           <div class="progress-bg"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
         </div>
       </div>
-
       <div id="ocrPreview" class="ocr-preview hidden">
-        <div class="preview-head">📝 Raw OCR Text <span class="preview-note">(what was scanned)</span></div>
+        <div class="preview-head">📝 Extracted Text <span class="preview-note">(raw scan)</span></div>
         <pre id="ocrRawText"></pre>
       </div>
-
       <div id="extractedValues" class="extracted-box hidden">
-        <div class="extracted-head">✅ Values Detected from Report</div>
+        <div class="extracted-head">✅ Values Detected</div>
         <div id="extractedGrid" class="extracted-grid"></div>
-        <p class="extracted-note">✏️ Values have been filled in the manual form above. You can edit them before analyzing.</p>
+        <p class="extracted-note">✏️ Values transferred to Manual Entry tab for review. Switch there to edit before analyzing.</p>
       </div>
-    </div><!-- /panelUpload -->
+    </div>
 
+    <!-- ══ TAB 3: HEART & BRAIN ══ -->
+    <div id="panelHB" class="tab-panel" style="display:none">
+
+      <!-- Section switcher -->
+      <div class="hbs-switcher">
+        <button class="hbs-btn active" id="hbsSwitchHeart" onclick="switchHBSection('heart')">
+          <span class="hbs-btn-icon">🫀</span>
+          <div class="hbs-btn-text"><strong>Heart Tests</strong><span>9 cardiac tests & conditions</span></div>
+        </button>
+        <button class="hbs-btn" id="hbsSwitchBrain" onclick="switchHBSection('brain')">
+          <span class="hbs-btn-icon">🧠</span>
+          <div class="hbs-btn-text"><strong>Brain Tests</strong><span>7 neurological tests & conditions</span></div>
+        </button>
+      </div>
+
+      <!-- ── HEART SECTION ── -->
+      <div id="hbSectionHeart" class="hbs-section" style="display:block">
+
+        <div class="hbs-section-header heart">
+          <div class="hbs-header-icon">🫀</div>
+          <div>
+            <h3 class="hbs-header-title">Heart & Cardiac Tests</h3>
+            <p class="hbs-header-sub">Upload any cardiac report below — ECG, Echo, Angiography, CT, MRI — our AI will scan and analyze it. Or explore all 9 cardiac tests below.</p>
+          </div>
+        </div>
+
+        <!-- Heart Upload Box -->
+        <div class="hbs-upload-box heart" id="heartUploadBox">
+          <div class="hbs-drop-zone type-heart" id="heartDropZone"
+               ondragenter="secDragEnter(event,'heart')"
+               ondragover="secDragOver(event,'heart')"
+               ondragleave="secDragLeave(event,'heart')"
+               ondrop="secDrop(event,'heart')">
+            <input type="file" id="fileInputHeart" accept="image/*,.pdf" style="display:none" onchange="secFileSelect(event,'heart')"/>
+            <div class="hbs-dz-idle" id="heartDZIdle">
+              <div class="hbs-dz-pulse">
+                <div class="hbs-dz-ring"></div>
+                <div class="hbs-dz-ring hbs-delay"></div>
+                <span class="hbs-dz-icon">🫀</span>
+              </div>
+              <div class="hbs-dz-title">Drop your Heart / ECG Report here</div>
+              <div class="hbs-dz-sub">ECG · Echo · Angiography · CT · MRI · Lipid Report</div>
+              <div class="hbs-dz-divider"><span>or</span></div>
+              <button class="hbs-browse-btn heart" onclick="document.getElementById('fileInputHeart').click()">📂 Browse Files</button>
+              <div class="hbs-dz-formats">JPG · PNG · PDF supported</div>
+            </div>
+            <div class="hbs-dz-overlay hidden" id="heartDZOverlay">
+              <div class="hbs-overlay-icon">📥</div>
+              <p class="hbs-overlay-text">Release to upload</p>
+            </div>
+          </div>
+          <div class="hbs-file-card hidden type-heart" id="heartFileCard">
+            <div class="hbs-fc-icon" id="heartFCIcon">📄</div>
+            <div class="hbs-fc-info">
+              <div class="hbs-fc-name" id="heartFCName">—</div>
+              <div class="hbs-fc-size" id="heartFCSize">—</div>
+            </div>
+            <div class="hbs-fc-actions">
+              <button class="hbs-analyze-btn heart" onclick="secAnalyze('heart')">🔬 Analyze Report</button>
+              <button class="hbs-remove-btn" onclick="secRemove('heart')" title="Remove">✕</button>
+            </div>
+          </div>
+          <div id="heartOCRProgress" class="ocr-progress hidden">
+            <div class="ocr-spinner"></div>
+            <div class="ocr-text-wrap">
+              <p id="heartOCRStatus">Initializing…</p>
+              <div class="progress-bg"><div class="progress-fill" id="heartOCRBar" style="width:0%"></div></div>
+            </div>
+          </div>
+          <div id="heartOCRPreview" class="ocr-preview hidden">
+            <div class="preview-head">📝 Scanned Text <span class="preview-note">(raw)</span></div>
+            <pre id="heartOCRText"></pre>
+          </div>
+        </div>
+
+        <!-- Heart Tests Grid -->
+        <div class="hbs-tests-heading">📋 All Cardiac Tests — What They Detect</div>
+        <div class="hbs-tests-grid" id="heartTestsGrid">
+
+          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">⚡</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">ECG / EKG</div>
+                <div class="hbs-tc-full">Electrocardiogram</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Measures electrical activity of the heart. Records the rhythm, rate, and pattern of every heartbeat using electrodes placed on skin.</div>
+              <div class="hbs-tc-detects-label">Detects:</div>
+              <ul class="hbs-tc-list">
+                <li>🔴 Irregular heartbeat (arrhythmia) — AFib, VT, bradycardia</li>
+                <li>🔴 Heart attack (STEMI/NSTEMI) — ST elevation or depression</li>
+                <li>🟡 Left ventricular hypertrophy (LVH)</li>
+                <li>🟡 Bundle branch blocks (LBBB/RBBB)</li>
+                <li>🟡 QT prolongation — sudden death risk</li>
+                <li>✅ Normal sinus rhythm — healthy electrical pattern</li>
+              </ul>
+              <div class="hbs-tc-note">💡 First test done when heart disease is suspected. Takes 5 minutes, painless.</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">🔊</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">Echocardiogram</div>
+                <div class="hbs-tc-full">Echo — Ultrasound of the Heart</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Uses ultrasound waves to create real-time images of the beating heart. Shows structure, movement, and pumping function.</div>
+              <div class="hbs-tc-detects-label">Detects:</div>
+              <ul class="hbs-tc-list">
+                <li>🔴 Heart failure — low ejection fraction (EF &lt;40%)</li>
+                <li>🔴 Valve disease — stenosis (narrowing) or regurgitation (leaking)</li>
+                <li>🔴 Cardiomyopathy — enlarged or thickened heart muscle</li>
+                <li>🟡 Pericardial effusion — fluid around heart</li>
+                <li>🟡 Wall motion abnormalities after heart attack</li>
+                <li>✅ Normal EF 55–70% means good pumping function</li>
+              </ul>
+              <div class="hbs-tc-note">💡 Key number to know: Ejection Fraction (EF). Normal is 55–70%. Below 40% is heart failure.</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">🩸</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">Blood Pressure Test</div>
+                <div class="hbs-tc-full">Sphygmomanometry</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Measures the force of blood pushing against artery walls. Reported as systolic/diastolic (e.g., 120/80 mmHg).</div>
+              <div class="hbs-tc-detects-label">Ranges:</div>
+              <ul class="hbs-tc-list">
+                <li>✅ Normal: &lt;120/80 mmHg</li>
+                <li>🟡 Elevated: 120–129 / &lt;80 mmHg — lifestyle change needed</li>
+                <li>🟡 Stage 1 Hypertension: 130–139 / 80–89 mmHg</li>
+                <li>🔴 Stage 2 Hypertension: ≥140/90 mmHg — medication needed</li>
+                <li>🔴 Hypertensive Crisis: &gt;180/120 — emergency!</li>
+                <li>🟡 Low BP (Hypotension): &lt;90/60 — dizziness, fainting</li>
+              </ul>
+              <div class="hbs-tc-note">💡 High BP is the #1 cause of stroke and heart attack. Called the "silent killer" — no symptoms until damage is done.</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">🧪</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">Lipid Profile Test</div>
+                <div class="hbs-tc-full">Blood Cholesterol Test</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Blood test measuring all forms of fat (lipids) in the blood. Done fasting for 9–12 hours. Most important cardiac risk assessment test.</div>
+              <div class="hbs-tc-detects-label">Normal ranges:</div>
+              <ul class="hbs-tc-list">
+                <li>✅ Total Cholesterol: &lt;200 mg/dL (optimal)</li>
+                <li>🔴 LDL (bad): &lt;100 mg/dL optimal; &gt;160 high risk</li>
+                <li>✅ HDL (good): &gt;60 mg/dL protective; &lt;40 danger</li>
+                <li>🟡 Triglycerides: &lt;150 normal; &gt;200 high risk</li>
+                <li>🔴 High LDL + low HDL = major heart attack risk</li>
+              </ul>
+              <div class="hbs-tc-note">💡 Even a 10% reduction in LDL reduces heart attack risk by 20–25%. Statins are highly effective.</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">💉</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">Troponin Test</div>
+                <div class="hbs-tc-full">Cardiac Troponin I / T</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Blood test that detects troponin — a protein released when heart muscle cells are damaged or dying. Gold standard for heart attack diagnosis.</div>
+              <div class="hbs-tc-detects-label">Interpretation:</div>
+              <ul class="hbs-tc-list">
+                <li>✅ Normal: Troponin I &lt;0.04 ng/mL (lab-specific ranges vary)</li>
+                <li>🔴 Elevated: Confirms myocardial injury — heart attack likely</li>
+                <li>🔴 Rising trend (serial tests 3–6 hours apart) = heart attack in progress</li>
+                <li>🟡 Mildly elevated: Can also indicate myocarditis, PE, or severe infection</li>
+                <li>💡 High-sensitivity troponin (hsTnI) detects damage within 1 hour</li>
+              </ul>
+              <div class="hbs-tc-note">💡 Most important test in Emergency Room for chest pain. 99% sensitive for heart attack when tested at 0 and 3 hours.</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">🏃</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">Stress Test (TMT)</div>
+                <div class="hbs-tc-full">Treadmill / Exercise Stress Test</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">ECG recorded while patient walks on a treadmill at increasing speeds. The heart is stressed to reveal problems not visible at rest.</div>
+              <div class="hbs-tc-detects-label">Detects:</div>
+              <ul class="hbs-tc-list">
+                <li>🔴 Blocked coronary arteries — causes ST depression during exercise</li>
+                <li>🔴 Exercise-induced arrhythmias — dangerous irregular rhythm</li>
+                <li>🟡 Poor exercise tolerance — indicates reduced heart reserve</li>
+                <li>🟡 Abnormal blood pressure response during exercise</li>
+                <li>✅ Negative test = lower risk of significant coronary disease</li>
+              </ul>
+              <div class="hbs-tc-note">💡 If TMT is positive (ST depression &gt;2mm), coronary angiography is usually the next step.</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">💉</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">Coronary Angiography</div>
+                <div class="hbs-tc-full">Cardiac Catheterization</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Invasive procedure: dye injected into coronary arteries via catheter. X-ray images show exact location and severity of blockages. Gold standard for coronary artery disease.</div>
+              <div class="hbs-tc-detects-label">Detects:</div>
+              <ul class="hbs-tc-list">
+                <li>🔴 Coronary artery stenosis — percentage of blockage in each artery</li>
+                <li>🔴 Total occlusion — 100% blocked artery requiring urgent stent</li>
+                <li>🟡 Collateral circulation — natural bypass vessels</li>
+                <li>💊 During procedure: angioplasty + stent can be placed immediately</li>
+                <li>🔴 Significant stenosis &gt;70% usually requires stent or bypass surgery</li>
+              </ul>
+              <div class="hbs-tc-note">💡 Both diagnostic and potentially therapeutic — a blockage found can often be treated in the same procedure.</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">🖥️</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">Cardiac CT Scan</div>
+                <div class="hbs-tc-full">CT Coronary Angiography / Calcium Score</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Non-invasive CT imaging of the heart and coronary arteries. Can calculate Coronary Artery Calcium (CAC) score and show arterial blockages without catheter.</div>
+              <div class="hbs-tc-detects-label">Detects:</div>
+              <ul class="hbs-tc-list">
+                <li>🔴 Calcium deposits in arteries — CAC score &gt;400 = high risk</li>
+                <li>🔴 Coronary artery stenosis — non-invasive blockage detection</li>
+                <li>🟡 Plaque (soft and hard) in arterial walls</li>
+                <li>✅ CAC score = 0 means very low 10-year cardiac risk</li>
+                <li>🟡 Congenital heart anomalies and structural defects</li>
+              </ul>
+              <div class="hbs-tc-note">💡 CAC score is one of the best predictors of future heart attack risk. Score 0 is very reassuring.</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">🧲</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">Cardiac MRI</div>
+                <div class="hbs-tc-full">Magnetic Resonance Imaging — Heart</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Advanced imaging using magnetic fields and radio waves. Provides the most detailed pictures of heart tissue, function, and blood flow without radiation.</div>
+              <div class="hbs-tc-detects-label">Detects:</div>
+              <ul class="hbs-tc-list">
+                <li>🔴 Myocardial scarring — scar tissue from old heart attacks (late gadolinium enhancement)</li>
+                <li>🔴 Myocarditis — inflammation of heart muscle</li>
+                <li>🔴 Cardiomyopathy — precise measurement of heart dimensions</li>
+                <li>🟡 Pericardial disease — pericarditis, effusion, constriction</li>
+                <li>✅ Most accurate measurement of ejection fraction (EF)</li>
+              </ul>
+              <div class="hbs-tc-note">💡 Gold standard for cardiomyopathy and myocarditis diagnosis. No radiation exposure unlike CT.</div>
+            </div>
+          </div>
+
+        </div><!-- /heartTestsGrid -->
+      </div><!-- /hbSectionHeart -->
+
+      <!-- ── BRAIN SECTION ── -->
+      <div id="hbSectionBrain" class="hbs-section" style="display:none">
+
+        <div class="hbs-section-header brain">
+          <div class="hbs-header-icon">🧠</div>
+          <div>
+            <h3 class="hbs-header-title">Brain & Neurological Tests</h3>
+            <p class="hbs-header-sub">Upload any neurology report below — MRI, CT, EEG, PET scan — our AI will scan and analyze it. Or explore all 7 brain tests below.</p>
+          </div>
+        </div>
+
+        <!-- Brain Upload Box -->
+        <div class="hbs-upload-box brain" id="brainUploadBox">
+          <div class="hbs-drop-zone type-brain" id="brainDropZone"
+               ondragenter="secDragEnter(event,'brain')"
+               ondragover="secDragOver(event,'brain')"
+               ondragleave="secDragLeave(event,'brain')"
+               ondrop="secDrop(event,'brain')">
+            <input type="file" id="fileInputBrain" accept="image/*,.pdf" style="display:none" onchange="secFileSelect(event,'brain')"/>
+            <div class="hbs-dz-idle" id="brainDZIdle">
+              <div class="hbs-dz-pulse">
+                <div class="hbs-dz-ring"></div>
+                <div class="hbs-dz-ring hbs-delay"></div>
+                <span class="hbs-dz-icon">🧠</span>
+              </div>
+              <div class="hbs-dz-title">Drop your Brain / Neurology Report here</div>
+              <div class="hbs-dz-sub">MRI · CT · EEG · PET Scan · Angiogram · LP Report</div>
+              <div class="hbs-dz-divider"><span>or</span></div>
+              <button class="hbs-browse-btn brain" onclick="document.getElementById('fileInputBrain').click()">📂 Browse Files</button>
+              <div class="hbs-dz-formats">JPG · PNG · PDF supported</div>
+            </div>
+            <div class="hbs-dz-overlay hidden" id="brainDZOverlay">
+              <div class="hbs-overlay-icon">📥</div>
+              <p class="hbs-overlay-text">Release to upload</p>
+            </div>
+          </div>
+          <div class="hbs-file-card hidden type-brain" id="brainFileCard">
+            <div class="hbs-fc-icon" id="brainFCIcon">📄</div>
+            <div class="hbs-fc-info">
+              <div class="hbs-fc-name" id="brainFCName">—</div>
+              <div class="hbs-fc-size" id="brainFCSize">—</div>
+            </div>
+            <div class="hbs-fc-actions">
+              <button class="hbs-analyze-btn brain" onclick="secAnalyze('brain')">🔬 Analyze Report</button>
+              <button class="hbs-remove-btn" onclick="secRemove('brain')" title="Remove">✕</button>
+            </div>
+          </div>
+          <div id="brainOCRProgress" class="ocr-progress hidden">
+            <div class="ocr-spinner"></div>
+            <div class="ocr-text-wrap">
+              <p id="brainOCRStatus">Initializing…</p>
+              <div class="progress-bg"><div class="progress-fill" id="brainOCRBar" style="width:0%"></div></div>
+            </div>
+          </div>
+          <div id="brainOCRPreview" class="ocr-preview hidden">
+            <div class="preview-head">📝 Scanned Text <span class="preview-note">(raw)</span></div>
+            <pre id="brainOCRText"></pre>
+          </div>
+        </div>
+
+        <!-- Brain Tests Grid -->
+        <div class="hbs-tests-heading">📋 All Neurological Tests — What They Detect</div>
+        <div class="hbs-tests-grid" id="brainTestsGrid">
+
+          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">🖥️</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">CT Scan (Brain)</div>
+                <div class="hbs-tc-full">Computed Tomography — Head</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Uses X-rays and computer processing to create cross-sectional images of the brain. Fast test (5 minutes) — first done in emergencies.</div>
+              <div class="hbs-tc-detects-label">Detects:</div>
+              <ul class="hbs-tc-list">
+                <li>🔴 Brain hemorrhage — bleeding inside skull (most sensitive CT finding)</li>
+                <li>🔴 Acute stroke — large ischemic area, hemorrhagic transformation</li>
+                <li>🔴 Brain injury — contusion, fractures, midline shift</li>
+                <li>🟡 Brain tumors — mass lesions, calcifications</li>
+                <li>🟡 Hydrocephalus — enlarged fluid spaces</li>
+                <li>✅ First test in any head injury or sudden severe headache</li>
+              </ul>
+              <div class="hbs-tc-note">💡 CT is the fastest and most accessible brain scan. MRI is more detailed but takes longer.</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">🧲</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">MRI (Brain)</div>
+                <div class="hbs-tc-full">Magnetic Resonance Imaging — Brain</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Uses magnetic fields and radio waves to create detailed images of brain tissue. Far more sensitive than CT for most brain conditions. No radiation.</div>
+              <div class="hbs-tc-detects-label">Detects:</div>
+              <ul class="hbs-tc-list">
+                <li>🔴 Brain tumors — size, location, spread, type (glioma vs meningioma)</li>
+                <li>🔴 Ischemic stroke — DWI (diffusion) detects within 30 minutes</li>
+                <li>🔴 Multiple sclerosis — white matter lesions (plaques)</li>
+                <li>🟡 Alzheimer's — hippocampal atrophy, cortical thinning</li>
+                <li>🟡 Epilepsy focus — structural cause of seizures</li>
+                <li>🟡 Aneurysm — MRA (MRI angiography) shows vascular abnormalities</li>
+              </ul>
+              <div class="hbs-tc-note">💡 Gold standard for most brain conditions. DWI sequence is critical in acute stroke — detects infarct within minutes of onset.</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">⚡</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">EEG</div>
+                <div class="hbs-tc-full">Electroencephalogram</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Records electrical activity of the brain using electrodes placed on the scalp. The "ECG for the brain." Can record during sleep for overnight monitoring.</div>
+              <div class="hbs-tc-detects-label">Detects:</div>
+              <ul class="hbs-tc-list">
+                <li>🔴 Epilepsy — interictal spikes, sharp waves, seizure discharges</li>
+                <li>🔴 Status epilepticus — continuous seizure activity</li>
+                <li>🟡 Encephalopathy — diffuse slowing from metabolic causes</li>
+                <li>🟡 Sleep disorders — sleep staging, REM behavior disorder</li>
+                <li>🟡 Brain death — electrocerebral silence (flat EEG)</li>
+                <li>✅ Normal EEG does NOT rule out epilepsy (40% of epileptics have normal EEG)</li>
+              </ul>
+              <div class="hbs-tc-note">💡 A 24–72 hour ambulatory EEG is much more sensitive than a routine 20-minute EEG for capturing seizures.</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">🔆</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">PET Scan (Brain)</div>
+                <div class="hbs-tc-full">Positron Emission Tomography</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Functional imaging — shows metabolic activity of brain regions using radioactive tracer (usually FDG-glucose). Areas with low activity appear dark.</div>
+              <div class="hbs-tc-detects-label">Detects:</div>
+              <ul class="hbs-tc-list">
+                <li>🔴 Alzheimer's disease — hypometabolism in temporal/parietal lobes</li>
+                <li>🔴 Amyloid PET — directly detects amyloid plaques (Alzheimer's hallmark)</li>
+                <li>🔴 Brain tumor activity vs radiation necrosis — key treatment decision</li>
+                <li>🟡 Parkinson's — dopamine transporter (DaT) scan shows nigral degeneration</li>
+                <li>🟡 Epilepsy focus localization before surgery</li>
+              </ul>
+              <div class="hbs-tc-note">💡 Amyloid PET (2024) can detect Alzheimer's 10–15 years before symptoms appear — enabling early intervention.</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">💉</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">Lumbar Puncture</div>
+                <div class="hbs-tc-full">Spinal Tap — CSF Analysis</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Needle inserted into lower spine to collect cerebrospinal fluid (CSF) — the fluid surrounding brain and spinal cord. Analyzed for cells, proteins, glucose, and pathogens.</div>
+              <div class="hbs-tc-detects-label">Detects:</div>
+              <ul class="hbs-tc-list">
+                <li>🔴 Bacterial meningitis — turbid CSF, high WBC, low glucose, bacteria on culture</li>
+                <li>🔴 Viral meningitis / encephalitis — lymphocytic pleocytosis</li>
+                <li>🔴 Subarachnoid hemorrhage — xanthochromia (yellow CSF)</li>
+                <li>🟡 Multiple sclerosis — oligoclonal bands in CSF</li>
+                <li>🟡 Alzheimer's — low Aβ42, high tau in CSF</li>
+              </ul>
+              <div class="hbs-tc-note">💡 Always done AFTER CT scan to rule out raised intracranial pressure (blind LP in raised ICP can cause brain herniation).</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">🩹</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">Brain Angiography</div>
+                <div class="hbs-tc-full">Cerebral / Brain Angiogram</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Uses dye injected into brain arteries to create detailed X-ray images of blood vessels. Gold standard for cerebrovascular disease. Can be invasive (DSA) or non-invasive (CTA/MRA).</div>
+              <div class="hbs-tc-detects-label">Detects:</div>
+              <ul class="hbs-tc-list">
+                <li>🔴 Intracranial aneurysm — ballooning of artery wall, rupture risk</li>
+                <li>🔴 AVM (Arteriovenous Malformation) — abnormal tangle of vessels</li>
+                <li>🔴 Carotid artery stenosis — narrowing causing stroke/TIA risk</li>
+                <li>🟡 Vasospasm after subarachnoid hemorrhage</li>
+                <li>🔴 Acute ischemic stroke — clot visible in major artery (for thrombectomy)</li>
+              </ul>
+              <div class="hbs-tc-note">💡 DSA (digital subtraction angiography) remains gold standard. Endovascular treatment (coiling, stenting) can be done in same procedure.</div>
+            </div>
+          </div>
+
+          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
+            <div class="hbs-tc-head">
+              <span class="hbs-tc-icon">👨‍⚕️</span>
+              <div class="hbs-tc-info">
+                <div class="hbs-tc-name">Neurological Examination</div>
+                <div class="hbs-tc-full">Clinical Neuro Exam</div>
+              </div>
+              <span class="hbs-tc-arrow">▼</span>
+            </div>
+            <div class="hbs-tc-body">
+              <div class="hbs-tc-what">Bedside physical examination performed by neurologist. Tests every part of the nervous system systematically. Often reveals diagnosis before any scan is needed.</div>
+              <div class="hbs-tc-detects-label">Checks:</div>
+              <ul class="hbs-tc-list">
+                <li>🧠 Mental status — MMSE/MoCA for memory and cognition</li>
+                <li>👁️ Cranial nerves — vision, eye movement, facial sensation</li>
+                <li>💪 Motor function — power, tone, coordination in all limbs</li>
+                <li>🖐️ Sensory function — pain, temperature, vibration, proprioception</li>
+                <li>🔨 Reflexes — hyperreflexia (UMN), hyporeflexia (LMN), Babinski sign</li>
+                <li>🚶 Gait and balance — romberg test, tandem walking</li>
+              </ul>
+              <div class="hbs-tc-note">💡 An experienced neurologist can localize the lesion (exactly WHERE in the nervous system) just from the clinical exam — before any scan.</div>
+            </div>
+          </div>
+
+        </div><!-- /brainTestsGrid -->
+      </div><!-- /hbSectionBrain -->
+
+      <!-- Browse conditions row -->
+      <div class="hbs-bottom-row">
+        <div class="hbs-or-div"><span>or explore conditions directly</span></div>
+        <div class="hbs-browse-row-new">
+          <button class="btn-browse-heart" onclick="hbType='heart'; browseAllConditions()">🫀 Browse All Heart Conditions</button>
+          <button class="btn-browse-brain" onclick="hbType='brain'; browseAllConditions()">🧠 Browse All Brain Conditions</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Error -->
     <div id="errorMsg" class="error-msg hidden"></div>
 
-    <button class="btn-analyze" id="btnAnalyze" onclick="runAnalysis()">
+    <!-- Analyze button (hidden for tab 3 — auto-triggered) -->
+    <button class="btn-analyze" id="btnAnalyze" style="display:block" onclick="runAnalysis()">
       🔬 Analyze My Blood Report
     </button>
-
   </section>
 
   <!-- ══ LOADING ══ -->
@@ -215,48 +679,46 @@
       <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
       <span class="ring-icon">🧬</span>
     </div>
-    <p>Analyzing your complete blood report…</p>
+    <p id="loadingText">Analyzing your report…</p>
   </div>
 
-  <!-- ══ RESULTS ══ -->
+  <!-- ══ BLOOD RESULTS ══ -->
   <section id="resultsSection" class="hidden">
-
-    <!-- Top bar -->
     <div class="results-topbar">
-      <h2 class="results-title">📊 Your Blood Report Analysis</h2>
+      <h2 class="results-title">📊 Blood Report Analysis</h2>
       <button class="btn-reset" onclick="resetAll()">🔄 New Analysis</button>
     </div>
-
-    <!-- Overall Summary Banner -->
     <div id="summaryBanner" class="summary-banner"></div>
-
-    <!-- Condition Alerts -->
     <div id="conditionSection" class="condition-section hidden">
       <h3 class="section-heading">🚨 Detected Health Conditions</h3>
       <div id="conditionCards" class="condition-grid"></div>
     </div>
-
-    <!-- Chart -->
     <div class="card chart-card">
-      <h3 class="card-title">📈 Visual Overview of Your Values</h3>
-      <p class="card-sub">Bar = your value. Dashed line = upper normal limit.</p>
+      <h3 class="card-title">📈 Visual Overview</h3>
+      <p class="card-sub">Bars = your values. Dashed line = upper normal limit.</p>
       <div class="chart-scroll">
-        <div id="chartContainer" class="chart-container">
-          <canvas id="healthChart"></canvas>
-        </div>
+        <div id="chartContainer" class="chart-container"><canvas id="healthChart"></canvas></div>
       </div>
     </div>
-
-    <!-- Per-parameter results -->
     <h3 class="section-heading">🔬 Detailed Parameter Analysis</h3>
     <div id="paramResults" class="param-results"></div>
-
   </section>
+
+  <!-- ══ HEART & BRAIN RESULTS ══ -->
+
+  <!-- <section id="hbResultsSection" class="hidden">
+    <div class="results-topbar">
+      <h2 class="results-title" id="hbResultsTitle">🫀 Heart & ECG Analysis</h2>
+      <button class="btn-reset" onclick="resetHB()">🔄 New Analysis</button>
+    </div>
+    <div id="hbDetectedBanner" class="hb-banner hidden"></div>
+    <div id="hbConditionList" class="hb-condition-list"></div>
+  </section> -->
 
 </main>
 
 <footer class="site-footer">
-  <p>⚠️ <strong>Disclaimer:</strong> This tool is for educational purposes only. It is not a substitute for professional medical advice. Always consult a qualified doctor for diagnosis and treatment.</p>
+  <p>⚠️ <strong>Disclaimer:</strong> This tool is for educational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified doctor.</p>
 </footer>
 
 <script src="script.js"></script>
