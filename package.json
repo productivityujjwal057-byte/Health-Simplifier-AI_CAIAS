@@ -1,7 +1,7 @@
 {
-  "name": "ai-health-analyzer",
-  "version": "1.0.0",
-  "description": "AI Health Report Analyzer — Hemoglobin, Glucose, Cholesterol",
+  "name": "healthlens-ai-full",
+  "version": "2.0.0",
+  "description": "AI Health Report Analyzer — 17 Parameters + Condition Detection",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
