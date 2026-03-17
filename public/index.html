@@ -1,231 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Health Analyzer</title>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Health Simplifier AI — Full Blood Report Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
+<!-- Background -->
+<div class="bg-mesh"></div>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
-    <!-- Tesseract.js OCR -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="style.css" />
-  </head>
-
-  <body>
-    <!-- ── Background Blobs ── -->
-    <div class="bg-blob blob-1"></div>
-    <div class="bg-blob blob-2"></div>
-    <div class="bg-blob blob-3"></div>
-
-    <!-- ── Header ── -->
-    <header class="site-header">
-      <div class="header-inner">
-        <div class="logo">
-          <span class="logo-icon">🩺</span>
-          <span class="logo-text">Health Simplifier <span class="logo-ai">AI</span></span>
-        </div>
-        <p class="tagline">Understand your blood report in simple language</p>
+<!-- Header -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-badge">🩺</div>
+      <div>
+        <div class="logo-title">Health Simplifier <span class="badge-ai">AI</span></div>
+        <div class="logo-sub">Complete Blood Report Analyzer — 17 Parameters</div>
       </div>
-    </header>
+    </div>
+  </div>
+</header>
 
-    <!-- ── Main ── -->
-    <main class="container">
-      <!-- ─── Input Card ─── -->
-      <section class="card input-card" id="inputSection">
-        <h2 class="card-title">📋 Enter Your Report Values</h2>
-        <p class="card-subtitle">
-          Type values manually <em>or</em> upload a medical report image / PDF
-          to auto-extract them.
-        </p>
+<main class="container" id="app">
 
-        <!-- Tab toggle -->
-        <div class="tab-row" role="tablist">
-          <button
-            class="tab-btn active"
-            id="tabManual"
-            role="tab"
-            aria-selected="true"
-            onclick="switchTab('manual')"
-          >
-            ✏️ Manual Entry
-          </button>
-          <button
-            class="tab-btn"
-            id="tabUpload"
-            role="tab"
-            aria-selected="false"
-            onclick="switchTab('upload')"
-          >
-            📄 Upload Report
-          </button>
-        </div>
+  <!-- ══ INPUT SECTION ══ -->
+  <section class="card input-card" id="inputSection">
 
-        <!-- Manual entry -->
-        <div id="panelManual" class="tab-panel">
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="inputHemoglobin">
-                <span class="label-icon">🩸</span> Hemoglobin
-                <span class="unit-hint">(g/dL)</span>
-              </label>
-              <input
-                type="number"
-                id="inputHemoglobin"
-                placeholder="e.g. 13.2"
-                step="0.1"
-                min="1"
-                max="25"
-              />
-              <span class="hint">Normal: 12 – 17.5 g/dL</span>
-            </div>
+    <div class="section-head">
+      <h2>📋 Enter Your Blood Report Values</h2>
+      <p>Fill in as many values as available from your report. Leave blank what you don't have — only entered values will be analyzed.</p>
+    </div>
 
-            <div class="form-group">
-              <label for="inputGlucose">
-                <span class="label-icon">🍬</span> Blood Glucose
-                <span class="unit-hint">(mg/dL)</span>
-              </label>
-              <input
-                type="number"
-                id="inputGlucose"
-                placeholder="e.g. 95"
-                step="1"
-                min="10"
-                max="600"
-              />
-              <span class="hint">Normal fasting: 70 – 100 mg/dL</span>
-            </div>
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button class="tab active" id="tabManual" onclick="switchTab('manual')">✏️ Manual Entry</button>
+      <button class="tab" id="tabUpload" onclick="switchTab('upload')">📄 Upload Report</button>
+    </div>
 
-            <div class="form-group">
-              <label for="inputCholesterol">
-                <span class="label-icon">🫀</span> Total Cholesterol
-                <span class="unit-hint">(mg/dL)</span>
-              </label>
-              <input
-                type="number"
-                id="inputCholesterol"
-                placeholder="e.g. 185"
-                step="1"
-                min="50"
-                max="700"
-              />
-              <span class="hint">Optimal: below 200 mg/dL</span>
-            </div>
+    <!-- Manual Panel -->
+    <div id="panelManual" class="tab-panel">
+
+      <!-- Group: Blood -->
+      <div class="param-group">
+        <div class="group-label">🩸 Blood Count</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Hemoglobin (Hb) <span class="unit">g/dL</span></label>
+            <input type="number" id="f_hemoglobin" placeholder="e.g. 13.2" step="0.1"/>
+            <span class="ref">Normal: 12–17.5</span>
+          </div>
+          <div class="form-field">
+            <label>RBC Count <span class="unit">million/µL</span></label>
+            <input type="number" id="f_rbc" placeholder="e.g. 4.8" step="0.1"/>
+            <span class="ref">Normal: 4.0–5.5</span>
+          </div>
+          <div class="form-field">
+            <label>WBC Count <span class="unit">cells/µL</span></label>
+            <input type="number" id="f_wbc" placeholder="e.g. 7500" step="100"/>
+            <span class="ref">Normal: 4000–11000</span>
+          </div>
+          <div class="form-field">
+            <label>Platelets (PLT) <span class="unit">cells/µL</span></label>
+            <input type="number" id="f_platelets" placeholder="e.g. 250000" step="1000"/>
+            <span class="ref">Normal: 150000–400000</span>
           </div>
         </div>
-
-        <!-- Upload panel -->
-
-
-        
-        <!-- <div id="panelUpload" class="tab-panel hidden">
-          <div
-            class="upload-zone"
-            id="uploadZone"
-            onclick="document.getElementById('fileInput').click()"
-            ondragover="handleDragOver(event)"
-            ondrop="handleDrop(event)"
-          >
-            <div class="upload-icon">📁</div>
-            <p class="upload-title">Drop your report here</p>
-            <p class="upload-sub">
-              Supports JPG, PNG, PDF • Click or drag &amp; drop
-            </p>
-            <input
-              type="file"
-              id="fileInput"
-              accept="image/*,.pdf"
-              style="display: none"
-              onchange="handleFileUpload(event)"
-            />
-          </div> -->
-
-          <!-- OCR Progress -->
-          <div id="ocrProgress" class="ocr-progress hidden">
-            <div class="ocr-spinner"></div>
-            <p id="ocrStatus">Initializing OCR engine…</p>
-            <div class="progress-bar-wrap">
-              <div class="progress-bar" id="progressBar" style="width: 0%"></div>
-            </div>
-          </div>
-
-          <!-- OCR Raw text preview -->
-          <div id="ocrPreview" class="ocr-preview hidden">
-            <h4>📝 Extracted Text (raw)</h4>
-            <pre id="ocrRawText"></pre>
-          </div>
-
-          <!-- Extracted values -->
-          <div id="extractedValues" class="extracted-values hidden">
-            <h4>🔍 Detected Values</h4>
-            <div class="extracted-grid" id="extractedGrid"></div>
-            <p class="extracted-note">
-              ✏️ You can edit these values below before analyzing.
-            </p>
-          </div>
-        </div>
-
-        <!-- Analyze button -->
-        <button class="btn-analyze" id="btnAnalyze" onclick="analyzeReport()">
-          <span class="btn-icon">🔬</span> Analyze My Report
-        </button>
-
-        <!-- Error message -->
-        <div id="errorMsg" class="error-msg hidden"></div>
-      </section>
-
-      <!-- ─── Loading ─── -->
-      <div id="loadingSection" class="loading-section hidden">
-        <div class="loading-pulse">
-          <div class="pulse-ring"></div>
-          <div class="pulse-ring delay-1"></div>
-          <div class="pulse-ring delay-2"></div>
-          <span class="pulse-icon">🧬</span>
-        </div>
-        <p class="loading-text">Analyzing your health report…</p>
       </div>
 
-      <!-- ─── Results ─── -->
-      <section id="resultsSection" class="hidden">
-        <!-- Summary banner -->
-        <div class="results-header">
-          <h2>📊 Your Health Report Analysis</h2>
-          <button class="btn-reset" onclick="resetApp()">🔄 New Analysis</button>
-        </div>
-
-        <!-- Chart Card -->
-        <div class="card chart-card">
-          <h3 class="card-title">Visual Overview</h3>
-          <div class="chart-wrap">
-            <canvas id="healthChart"></canvas>
+      <!-- Group: Sugar & Lipids -->
+      <div class="param-group">
+        <div class="group-label">🍬 Glucose & Lipids</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Blood Glucose (Fasting) <span class="unit">mg/dL</span></label>
+            <input type="number" id="f_glucose" placeholder="e.g. 95" step="1"/>
+            <span class="ref">Normal fasting: 70–100</span>
           </div>
-          <div class="chart-legend" id="chartLegend"></div>
+          <div class="form-field">
+            <label>Total Cholesterol <span class="unit">mg/dL</span></label>
+            <input type="number" id="f_cholesterol" placeholder="e.g. 185" step="1"/>
+            <span class="ref">Optimal: &lt;200</span>
+          </div>
+          <div class="form-field">
+            <label>LDL Cholesterol <span class="unit">mg/dL</span></label>
+            <input type="number" id="f_ldl" placeholder="e.g. 110" step="1"/>
+            <span class="ref">Optimal: &lt;100</span>
+          </div>
+          <div class="form-field">
+            <label>HDL Cholesterol <span class="unit">mg/dL</span></label>
+            <input type="number" id="f_hdl" placeholder="e.g. 55" step="1"/>
+            <span class="ref">Good: &gt;60</span>
+          </div>
+          <div class="form-field">
+            <label>Triglycerides <span class="unit">mg/dL</span></label>
+            <input type="number" id="f_triglycerides" placeholder="e.g. 140" step="1"/>
+            <span class="ref">Normal: &lt;150</span>
+          </div>
         </div>
+      </div>
 
-        <!-- Parameter Cards -->
-        <div id="paramCards" class="param-cards"></div>
-      </section>
-    </main>
+      <!-- Group: Kidney -->
+      <div class="param-group">
+        <div class="group-label">🫘 Kidney Function</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Blood Urea Nitrogen (BUN) <span class="unit">mg/dL</span></label>
+            <input type="number" id="f_bun" placeholder="e.g. 14" step="0.1"/>
+            <span class="ref">Normal: 7–20</span>
+          </div>
+          <div class="form-field">
+            <label>Creatinine <span class="unit">mg/dL</span></label>
+            <input type="number" id="f_creatinine" placeholder="e.g. 0.9" step="0.1"/>
+            <span class="ref">Normal: 0.6–1.2</span>
+          </div>
+          <div class="form-field">
+            <label>Uric Acid <span class="unit">mg/dL</span></label>
+            <input type="number" id="f_uricAcid" placeholder="e.g. 5.5" step="0.1"/>
+            <span class="ref">Normal: 3.4–7.0</span>
+          </div>
+        </div>
+      </div>
 
-    <!-- ── Footer ── -->
-    <footer class="site-footer">
-      <p>
-        ⚠️ <strong>Disclaimer:</strong> This tool is made for spreading awairness
-        .Always consult a qualified doctor for medical advice.
-      </p>
-    </footer>
+      <!-- Group: Electrolytes -->
+      <div class="param-group">
+        <div class="group-label">⚡ Electrolytes</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Sodium (Na⁺) <span class="unit">mEq/L</span></label>
+            <input type="number" id="f_sodium" placeholder="e.g. 140" step="1"/>
+            <span class="ref">Normal: 136–145</span>
+          </div>
+          <div class="form-field">
+            <label>Potassium (K⁺) <span class="unit">mEq/L</span></label>
+            <input type="number" id="f_potassium" placeholder="e.g. 4.2" step="0.1"/>
+            <span class="ref">Normal: 3.5–5.0</span>
+          </div>
+          <div class="form-field">
+            <label>Calcium (Ca²⁺) <span class="unit">mg/dL</span></label>
+            <input type="number" id="f_calcium" placeholder="e.g. 9.5" step="0.1"/>
+            <span class="ref">Normal: 8.5–10.5</span>
+          </div>
+        </div>
+      </div>
 
-    <script src="script.js"></script>
-  </body>
+      <!-- Group: Hormones & Vitamins -->
+      <div class="param-group">
+        <div class="group-label">🌿 Vitamins & Hormones</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Vitamin D <span class="unit">ng/mL</span></label>
+            <input type="number" id="f_vitaminD" placeholder="e.g. 28" step="1"/>
+            <span class="ref">Sufficient: &gt;30</span>
+          </div>
+          <div class="form-field">
+            <label>TSH (Thyroid) <span class="unit">mIU/L</span></label>
+            <input type="number" id="f_tsh" placeholder="e.g. 2.1" step="0.1"/>
+            <span class="ref">Normal: 0.4–4.0</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panelManual -->
+
+    <!-- Upload Panel -->
+    <div id="panelUpload" class="tab-panel hidden">
+      <div class="upload-zone" id="uploadZone"
+           onclick="document.getElementById('fileInput').click()"
+           ondragover="handleDragOver(event)" ondrop="handleDrop(event)">
+        <div class="upload-icon">📁</div>
+        <p class="upload-title">Drop your blood report here</p>
+        <p class="upload-sub">Supports JPG, PNG, PDF • Click or drag &amp; drop</p>
+        <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none" onchange="handleFileUpload(event)"/>
+      </div>
+
+      <div id="ocrProgress" class="ocr-progress hidden">
+        <div class="ocr-spinner"></div>
+        <div class="ocr-text-wrap">
+          <p id="ocrStatus">Initializing OCR engine…</p>
+          <div class="progress-bg"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <div id="ocrPreview" class="ocr-preview hidden">
+        <div class="preview-head">📝 Raw OCR Text <span class="preview-note">(what was scanned)</span></div>
+        <pre id="ocrRawText"></pre>
+      </div>
+
+      <div id="extractedValues" class="extracted-box hidden">
+        <div class="extracted-head">✅ Values Detected from Report</div>
+        <div id="extractedGrid" class="extracted-grid"></div>
+        <p class="extracted-note">✏️ Values have been filled in the manual form above. You can edit them before analyzing.</p>
+      </div>
+    </div><!-- /panelUpload -->
+
+    <div id="errorMsg" class="error-msg hidden"></div>
+
+    <button class="btn-analyze" id="btnAnalyze" onclick="runAnalysis()">
+      🔬 Analyze My Blood Report
+    </button>
+
+  </section>
+
+  <!-- ══ LOADING ══ -->
+  <div id="loadingSection" class="loading-wrap hidden">
+    <div class="loading-rings">
+      <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+      <span class="ring-icon">🧬</span>
+    </div>
+    <p>Analyzing your complete blood report…</p>
+  </div>
+
+  <!-- ══ RESULTS ══ -->
+  <section id="resultsSection" class="hidden">
+
+    <!-- Top bar -->
+    <div class="results-topbar">
+      <h2 class="results-title">📊 Your Blood Report Analysis</h2>
+      <button class="btn-reset" onclick="resetAll()">🔄 New Analysis</button>
+    </div>
+
+    <!-- Overall Summary Banner -->
+    <div id="summaryBanner" class="summary-banner"></div>
+
+    <!-- Condition Alerts -->
+    <div id="conditionSection" class="condition-section hidden">
+      <h3 class="section-heading">🚨 Detected Health Conditions</h3>
+      <div id="conditionCards" class="condition-grid"></div>
+    </div>
+
+    <!-- Chart -->
+    <div class="card chart-card">
+      <h3 class="card-title">📈 Visual Overview of Your Values</h3>
+      <p class="card-sub">Bar = your value. Dashed line = upper normal limit.</p>
+      <div class="chart-scroll">
+        <div id="chartContainer" class="chart-container">
+          <canvas id="healthChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Per-parameter results -->
+    <h3 class="section-heading">🔬 Detailed Parameter Analysis</h3>
+    <div id="paramResults" class="param-results"></div>
+
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p>⚠️ <strong>Disclaimer:</strong> This tool is for educational purposes only. It is not a substitute for professional medical advice. Always consult a qualified doctor for diagnosis and treatment.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
 </html>
