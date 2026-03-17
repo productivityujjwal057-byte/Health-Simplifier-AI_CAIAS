@@ -1,14 +1,75 @@
 /**
- * HealthLens AI — Frontend Script
- * Handles: OCR extraction, manual input, API calls, Chart.js visuals, results rendering
+ * HealthLens AI — Full Edition script.js
+ * 17-parameter OCR extraction, API calls, Chart.js, results rendering
  */
 
-// ── State ─────────────────────────────────────────────────────────────────
-let currentTab = "manual";
-let healthChart = null;
-let extractedOCR = { hemoglobin: null, glucose: null, cholesterol: null };
+// ── Config ─────────────────────────────────────────────────────────────────
+const PARAM_META = {
+  hemoglobin:    { label: "Hemoglobin",       icon: "🩸", unit: "g/dL",     max: 22,   normalMin: 12,    normalMax: 17.5 },
+  glucose:       { label: "Blood Glucose",    icon: "🍬", unit: "mg/dL",    max: 400,  normalMin: 70,    normalMax: 100  },
+  cholesterol:   { label: "Total Cholesterol",icon: "🫀", unit: "mg/dL",    max: 400,  normalMin: 0,     normalMax: 200  },
+  ldl:           { label: "LDL Cholesterol",  icon: "⚠️", unit: "mg/dL",    max: 300,  normalMin: 0,     normalMax: 100  },
+  hdl:           { label: "HDL Cholesterol",  icon: "💛", unit: "mg/dL",    max: 120,  normalMin: 40,    normalMax: 60   },
+  triglycerides: { label: "Triglycerides",    icon: "🧈", unit: "mg/dL",    max: 600,  normalMin: 0,     normalMax: 150  },
+  bun:           { label: "BUN",              icon: "🫘", unit: "mg/dL",    max: 60,   normalMin: 7,     normalMax: 20   },
+  creatinine:    { label: "Creatinine",       icon: "🧪", unit: "mg/dL",    max: 5,    normalMin: 0.6,   normalMax: 1.2  },
+  uricAcid:      { label: "Uric Acid",        icon: "🦴", unit: "mg/dL",    max: 12,   normalMin: 3.4,   normalMax: 7.0  },
+  sodium:        { label: "Sodium",           icon: "🧂", unit: "mEq/L",    max: 160,  normalMin: 136,   normalMax: 145  },
+  potassium:     { label: "Potassium",        icon: "⚡", unit: "mEq/L",    max: 7,    normalMin: 3.5,   normalMax: 5.0  },
+  calcium:       { label: "Calcium",          icon: "🦷", unit: "mg/dL",    max: 15,   normalMin: 8.5,   normalMax: 10.5 },
+  vitaminD:      { label: "Vitamin D",        icon: "☀️", unit: "ng/mL",    max: 100,  normalMin: 20,    normalMax: 50   },
+  wbc:           { label: "WBC Count",        icon: "🦠", unit: "cells/µL", max: 15000,normalMin: 4000,  normalMax: 11000},
+  rbc:           { label: "RBC Count",        icon: "🔴", unit: "M/µL",     max: 7,    normalMin: 4.0,   normalMax: 5.5  },
+  platelets:     { label: "Platelets",        icon: "🩹", unit: "cells/µL", max: 500000,normalMin:150000,normalMax:400000},
+  tsh:           { label: "TSH (Thyroid)",    icon: "🦋", unit: "mIU/L",    max: 10,   normalMin: 0.4,   normalMax: 4.0  },
+};
 
-// ── Tab Switching ─────────────────────────────────────────────────────────
+// OCR patterns for every parameter
+const OCR_PATTERNS = {
+  hemoglobin:    [/(?:h(?:a?e?mo?)?globin|hgb?|hb)\s*[:\-\(\/]?\s*(?:g\/dl)?\s*[:\-]?\s*(\d{1,2}(?:\.\d{1,2})?)/i,  /(\d{1,2}(?:\.\d{1,2})?)\s*g\/dl\s*(?:h(?:a?e?mo?)?globin|hgb?|hb)/i],
+  glucose:       [/(?:fasting\s+)?(?:blood\s+)?(?:glucose|sugar|f\.?b\.?s\.?|r\.?b\.?s\.?|f\.?p\.?g\.?)\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{2,3}(?:\.\d)?)/i, /(\d{2,3}(?:\.\d)?)\s*mg\/dl\s*(?:glucose|sugar|fbs|rbs)/i],
+  cholesterol:   [/(?:total\s+)?(?:t\.?\s*)?cholesterol\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{2,3}(?:\.\d)?)/i, /(\d{2,3}(?:\.\d)?)\s*mg\/dl\s*(?:total\s+)?cholesterol/i],
+  ldl:           [/l\.?d\.?l\.?\s*(?:cholesterol)?\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{2,3}(?:\.\d)?)/i, /(\d{2,3}(?:\.\d)?)\s*mg\/dl\s*ldl/i],
+  hdl:           [/h\.?d\.?l\.?\s*(?:cholesterol)?\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{1,3}(?:\.\d)?)/i, /(\d{1,3}(?:\.\d)?)\s*mg\/dl\s*hdl/i],
+  triglycerides: [/(?:triglycerides?|tg|vldl)\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{2,4}(?:\.\d)?)/i, /(\d{2,4}(?:\.\d)?)\s*mg\/dl\s*triglycerides?/i],
+  bun:           [/(?:blood\s+urea\s+nitrogen|b\.?u\.?n\.?|urea\s+nitrogen)\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{1,3}(?:\.\d)?)/i],
+  creatinine:    [/creatinine\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{1}(?:\.\d{1,2})?)/i, /(\d\.\d{1,2})\s*mg\/dl\s*creatinine/i],
+  uricAcid:      [/uric\s*acid\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{1,2}(?:\.\d{1,2})?)/i, /(\d{1,2}(?:\.\d{1,2})?)\s*mg\/dl\s*uric/i],
+  sodium:        [/(?:sodium|na\+?)\s*[:\-\(]?\s*(?:m[e]?q\/l)?\s*[:\-]?\s*(\d{3}(?:\.\d)?)/i],
+  potassium:     [/(?:potassium|k\+?)\s*[:\-\(]?\s*(?:m[e]?q\/l)?\s*[:\-]?\s*(\d{1}(?:\.\d{1,2})?)/i],
+  calcium:       [/(?:calcium|ca\+?\+?)\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{1,2}(?:\.\d{1,2})?)/i],
+  vitaminD:      [/(?:vitamin\s*d|vit\.?\s*d|25-?oh|25\s*hydroxy)\s*[:\-\(]?\s*(?:ng\/ml)?\s*[:\-]?\s*(\d{1,3}(?:\.\d)?)/i],
+  wbc:           [/(?:wbc|w\.b\.c|white\s*blood\s*cells?|total\s*(?:wbc|leukocyte))\s*(?:count)?\s*[:\-\(]?\s*(?:cells?\/[µu]?l|\/cmm)?\s*[:\-]?\s*(\d{3,6}(?:\.\d)?)/i],
+  rbc:           [/(?:rbc|r\.b\.c|red\s*blood\s*cells?)\s*(?:count)?\s*[:\-\(]?\s*(?:million\/[µu]?l|M\/[µu]?l|\/cmm)?\s*[:\-]?\s*(\d{1}(?:\.\d{1,2})?)/i],
+  platelets:     [/(?:platelet|plt|thrombocyte)\s*(?:count)?\s*[:\-\(]?\s*(?:cells?\/[µu]?l|\/cmm|thou\/[µu]?l|x10)?\s*[:\-]?\s*(\d{3,7}(?:\.\d)?)/i],
+  tsh:           [/(?:t\.?s\.?h\.?|thyroid\s*stimulating\s*hormone)\s*[:\-\(]?\s*(?:m[i]?u\/l|[µu]iu\/ml)?\s*[:\-]?\s*(\d{1,3}(?:\.\d{1,3})?)/i],
+};
+
+// Physiological sanity bounds
+const BOUNDS = {
+  hemoglobin:    [2, 22],
+  glucose:       [30, 700],
+  cholesterol:   [50, 700],
+  ldl:           [20, 500],
+  hdl:           [10, 120],
+  triglycerides: [30, 2000],
+  bun:           [2, 150],
+  creatinine:    [0.2, 20],
+  uricAcid:      [1, 20],
+  sodium:        [110, 175],
+  potassium:     [1.5, 9],
+  calcium:       [4, 18],
+  vitaminD:      [2, 200],
+  wbc:           [500, 100000],
+  rbc:           [1, 8],
+  platelets:     [5000, 1500000],
+  tsh:           [0.01, 50],
+};
+
+let healthChart = null;
+let currentTab  = "manual";
+
+// ── Tab Switching ───────────────────────────────────────────────────────────
 function switchTab(tab) {
   currentTab = tab;
   document.getElementById("panelManual").classList.toggle("hidden", tab !== "manual");
@@ -18,7 +79,7 @@ function switchTab(tab) {
   hideError();
 }
 
-// ── Drag & Drop ───────────────────────────────────────────────────────────
+// ── Drag & Drop ─────────────────────────────────────────────────────────────
 function handleDragOver(e) {
   e.preventDefault();
   document.getElementById("uploadZone").classList.add("dragover");
@@ -34,118 +95,80 @@ function handleFileUpload(e) {
   if (file) processFile(file);
 }
 
-// ── OCR Processing ────────────────────────────────────────────────────────
+// ── OCR ─────────────────────────────────────────────────────────────────────
 async function processFile(file) {
-  const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf"];
-  if (!validTypes.includes(file.type)) {
-    showError("Please upload a JPG, PNG, or PDF file.");
-    return;
-  }
+  const valid = ["image/jpeg","image/png","image/gif","image/webp","application/pdf"];
+  if (!valid.includes(file.type)) { showError("Please upload a JPG, PNG, or PDF file."); return; }
 
-  // Show progress
-  showEl("ocrProgress");
-  hideEl("ocrPreview");
-  hideEl("extractedValues");
-  setProgress(5, `Loading file: ${file.name}…`);
+  show("ocrProgress"); hide("ocrPreview"); hide("extractedValues");
+  setProgress(5, `Reading: ${file.name}…`);
 
   try {
-    let imageDataUrl;
-
+    let imgUrl;
     if (file.type === "application/pdf") {
-      // For PDF: render first page using PDF.js CDN
-      imageDataUrl = await renderPdfToImage(file);
+      imgUrl = await pdfToImage(file);
     } else {
-      imageDataUrl = await fileToDataUrl(file);
+      imgUrl = await fileToDataUrl(file);
     }
 
-    setProgress(20, "OCR engine starting…");
+    setProgress(20, "OCR engine loading…");
 
-    // Run Tesseract OCR
     const worker = await Tesseract.createWorker("eng", 1, {
-      logger: (m) => {
+      logger: m => {
         if (m.status === "recognizing text") {
-          const pct = Math.round(m.progress * 60) + 25;
-          setProgress(pct, `Scanning text… ${Math.round(m.progress * 100)}%`);
+          setProgress(Math.round(m.progress * 60) + 25, `Scanning… ${Math.round(m.progress * 100)}%`);
         }
-      },
+      }
     });
 
     setProgress(85, "Extracting values…");
-    const { data: { text } } = await worker.recognize(imageDataUrl);
+    const { data: { text } } = await worker.recognize(imgUrl);
     await worker.terminate();
 
-    setProgress(95, "Parsing health values…");
-
-    // Show raw OCR text
-    showEl("ocrPreview");
+    setProgress(95, "Parsing report…");
     document.getElementById("ocrRawText").textContent = text.trim() || "(No text detected)";
+    show("ocrPreview");
 
-    // Extract values
-    const vals = extractHealthValues(text);
-    extractedOCR = vals;
-
-    // Populate manual fields
-    if (vals.hemoglobin) document.getElementById("inputHemoglobin").value = vals.hemoglobin;
-    if (vals.glucose)    document.getElementById("inputGlucose").value    = vals.glucose;
-    if (vals.cholesterol) document.getElementById("inputCholesterol").value = vals.cholesterol;
-
-    // Show chips
-    renderExtractedChips(vals);
+    const extracted = extractAllValues(text);
+    populateFields(extracted);
+    renderExtractedChips(extracted);
 
     setProgress(100, "Done!");
-    setTimeout(() => hideEl("ocrProgress"), 800);
+    setTimeout(() => hide("ocrProgress"), 700);
 
-    if (!vals.hemoglobin && !vals.glucose && !vals.cholesterol) {
-      showError(
-        "⚠️ Could not detect health values automatically. The image may be unclear or in an unsupported format. Please enter values manually in the fields below, then click Analyze."
-      );
+    const count = Object.values(extracted).filter(v => v !== null).length;
+    if (count === 0) {
+      showError("⚠️ Could not automatically detect values. The image may be unclear. Please enter values manually in the form above.");
       switchTab("manual");
     }
-
   } catch (err) {
-    console.error("OCR Error:", err);
-    hideEl("ocrProgress");
+    hide("ocrProgress");
     showError("OCR failed: " + (err.message || "Unknown error. Try a clearer image."));
   }
 }
 
-// Convert File to base64 data URL
 function fileToDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error("Failed to read file"));
-    reader.readAsDataURL(file);
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = () => rej(new Error("Failed to read file"));
+    r.readAsDataURL(file);
   });
 }
 
-// Render PDF first page to canvas image
-async function renderPdfToImage(file) {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Load PDF.js dynamically
-      if (!window.pdfjsLib) {
-        await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-      }
-
-      const ab = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
-      const page = await pdf.getPage(1);
-      const viewport = page.getViewport({ scale: 2.0 }); // 2x for better OCR
-
-      const canvas = document.createElement("canvas");
-      canvas.width  = viewport.width;
-      canvas.height = viewport.height;
-      const ctx = canvas.getContext("2d");
-
-      await page.render({ canvasContext: ctx, viewport }).promise;
-      resolve(canvas.toDataURL("image/png"));
-    } catch (e) {
-      reject(e);
-    }
-  });
+async function pdfToImage(file) {
+  if (!window.pdfjsLib) {
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  }
+  const ab  = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+  const page= await pdf.getPage(1);
+  const vp  = page.getViewport({ scale: 2.0 });
+  const can = document.createElement("canvas");
+  can.width = vp.width; can.height = vp.height;
+  await page.render({ canvasContext: can.getContext("2d"), viewport: vp }).promise;
+  return can.toDataURL("image/png");
 }
 
 function loadScript(src) {
@@ -156,259 +179,191 @@ function loadScript(src) {
   });
 }
 
-// ── Value Extraction (regex-based, robust for messy lab reports) ──────────
-function extractHealthValues(text) {
-  const vals = { hemoglobin: null, glucose: null, cholesterol: null };
+// ── Value Extraction ────────────────────────────────────────────────────────
+function extractAllValues(text) {
+  // Normalize OCR noise
+  const t = text.replace(/\n+/g, " ").replace(/\s+/g, " ").replace(/[|l](?=\d)/g, "1").replace(/O(?=\d)/g, "0");
+  const result = {};
 
-  // Clean up text
-  const t = text
-    .replace(/[|l]/g, "1")     // common OCR confusion
-    .replace(/O/g, "0")         // O → 0 in numeric contexts (careful)
-    .replace(/\n+/g, " ")
-    .replace(/\s+/g, " ");
-
-  // ── Hemoglobin patterns ──────────────────────────────────────────────────
-  // Matches: "Hemoglobin 13.5", "Hb: 12.4 g/dL", "HGB 14", "Haemoglobin(g/dL) 11.2"
-  const hbPatterns = [
-    /(?:haemo?globin|h[bg]b?)\s*[:\-\(\/]?\s*[\(\[]?\s*(?:g\/dl)?\s*[\)\]]?\s*[:\-]?\s*(\d{1,2}(?:\.\d{1,2})?)/i,
-    /(\d{1,2}(?:\.\d{1,2})?)\s*(?:g\/dl)?\s*(?:haemo?globin|h[gb]b?)/i,
-  ];
-  for (const p of hbPatterns) {
-    const m = t.match(p);
-    if (m) { vals.hemoglobin = parseFloat(m[1]); break; }
+  for (const [key, patterns] of Object.entries(OCR_PATTERNS)) {
+    result[key] = null;
+    for (const pat of patterns) {
+      const m = t.match(pat);
+      if (m) {
+        const val = parseFloat(m[1]);
+        const [lo, hi] = BOUNDS[key];
+        if (!isNaN(val) && val >= lo && val <= hi) {
+          result[key] = val;
+          break;
+        }
+      }
+    }
   }
-
-  // ── Glucose patterns ─────────────────────────────────────────────────────
-  // Matches: "Glucose 95", "Blood Sugar: 110 mg/dL", "FBS 88", "RBS: 130", "Fasting Glucose 102"
-  const glPatterns = [
-    /(?:fasting\s+)?(?:blood\s+)?(?:glucose|sugar|f\.?b\.?s\.?|r\.?b\.?s\.?|f\.?p\.?g\.?)\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{2,3}(?:\.\d)?)/i,
-    /(\d{2,3}(?:\.\d)?)\s*(?:mg\/dl)?\s*(?:glucose|sugar|f\.?b\.?s\.?|r\.?b\.?s\.?)/i,
-  ];
-  for (const p of glPatterns) {
-    const m = t.match(p);
-    if (m) { vals.glucose = parseFloat(m[1]); break; }
-  }
-
-  // ── Cholesterol patterns ─────────────────────────────────────────────────
-  // Matches: "Total Cholesterol 185", "Chol: 220 mg/dL", "T. Cholesterol 199"
-  const chPatterns = [
-    /(?:total\s+)?(?:t\.?\s*)?cholesterol\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{2,3}(?:\.\d)?)/i,
-    /(\d{2,3}(?:\.\d)?)\s*(?:mg\/dl)?\s*(?:total\s+)?cholesterol/i,
-  ];
-  for (const p of chPatterns) {
-    const m = t.match(p);
-    if (m) { vals.cholesterol = parseFloat(m[1]); break; }
-  }
-
-  // Sanity checks — discard values outside physiological ranges
-  if (vals.hemoglobin && (vals.hemoglobin < 2 || vals.hemoglobin > 22))   vals.hemoglobin = null;
-  if (vals.glucose    && (vals.glucose    < 30 || vals.glucose    > 700)) vals.glucose    = null;
-  if (vals.cholesterol && (vals.cholesterol < 50 || vals.cholesterol > 700)) vals.cholesterol = null;
-
-  return vals;
+  return result;
 }
 
-// ── Render extracted value chips ──────────────────────────────────────────
+// ── Populate Fields ─────────────────────────────────────────────────────────
+function populateFields(vals) {
+  for (const [key, val] of Object.entries(vals)) {
+    const el = document.getElementById("f_" + key);
+    if (el && val !== null) el.value = val;
+  }
+}
+
+// ── Extracted Chips ─────────────────────────────────────────────────────────
 function renderExtractedChips(vals) {
   const grid = document.getElementById("extractedGrid");
-  const labels = { hemoglobin: "🩸 Hemoglobin", glucose: "🍬 Glucose", cholesterol: "🫀 Cholesterol" };
-  const units  = { hemoglobin: "g/dL", glucose: "mg/dL", cholesterol: "mg/dL" };
-
   grid.innerHTML = "";
-  let found = false;
-
-  for (const [key, label] of Object.entries(labels)) {
-    const val = vals[key];
+  let any = false;
+  for (const [key, val] of Object.entries(vals)) {
+    if (val === null) continue;
+    any = true;
+    const m = PARAM_META[key];
     const chip = document.createElement("div");
-    chip.className = "extracted-chip";
-    chip.innerHTML = `
-      <span class="chip-label">${label}</span>
-      <span class="chip-val">${val ? val + " " + units[key] : "—  Not found"}</span>
-    `;
+    chip.className = "ext-chip";
+    chip.innerHTML = `<div class="cl">${m.icon} ${m.label}</div><div class="cv">${val} ${m.unit}</div>`;
     grid.appendChild(chip);
-    if (val) found = true;
   }
-
-  if (found) showEl("extractedValues");
+  if (any) show("extractedValues");
 }
 
-// ── Progress helper ───────────────────────────────────────────────────────
+// ── OCR Helpers ─────────────────────────────────────────────────────────────
 function setProgress(pct, msg) {
   document.getElementById("progressBar").style.width = pct + "%";
   document.getElementById("ocrStatus").textContent = msg;
 }
 
-// ── Main Analyze ──────────────────────────────────────────────────────────
-async function analyzeReport() {
+// ── Read all form fields ─────────────────────────────────────────────────────
+function readFields() {
+  const data = {};
+  for (const key of Object.keys(PARAM_META)) {
+    const el = document.getElementById("f_" + key);
+    if (el && el.value.trim() !== "") {
+      const n = parseFloat(el.value);
+      if (!isNaN(n)) data[key] = n;
+    }
+  }
+  return data;
+}
+
+// ── Run Analysis ─────────────────────────────────────────────────────────────
+async function runAnalysis() {
   hideError();
+  const data = readFields();
 
-  // Gather values
-  const hemoglobin  = parseValue(document.getElementById("inputHemoglobin").value);
-  const glucose     = parseValue(document.getElementById("inputGlucose").value);
-  const cholesterol = parseValue(document.getElementById("inputCholesterol").value);
-
-  if (!hemoglobin && !glucose && !cholesterol) {
-    showError("Please enter at least one value (Hemoglobin, Glucose, or Cholesterol) to analyze.");
+  if (Object.keys(data).length === 0) {
+    showError("Please enter at least one value before analyzing.");
     return;
   }
 
-  // Show loading
-  hideEl("inputSection");
-  showEl("loadingSection");
-  hideEl("resultsSection");
+  hide("inputSection");
+  show("loadingSection");
+  hide("resultsSection");
 
   try {
-    const response = await fetch("/analyze", {
+    const res = await fetch("/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ hemoglobin, glucose, cholesterol }),
+      body: JSON.stringify(data),
     });
+    if (!res.ok) throw new Error(`Server error ${res.status}`);
+    const json = await res.json();
 
-    if (!response.ok) throw new Error(`Server error: ${response.status}`);
-
-    const data = await response.json();
-
-    hideEl("loadingSection");
-    showEl("resultsSection");
-
-    renderResults(data);
+    hide("loadingSection");
+    show("resultsSection");
+    renderResults(json);
 
   } catch (err) {
-    hideEl("loadingSection");
-    showEl("inputSection");
-    showError("Could not connect to the server. Make sure the backend is running on port 3000.\n" + err.message);
+    hide("loadingSection");
+    show("inputSection");
+    showError("Cannot connect to server. Make sure the backend is running on port 3000.\n" + err.message);
   }
 }
 
-function parseValue(v) {
-  const n = parseFloat(v);
-  return isNaN(n) ? null : n;
-}
-
-// ── Render Results ────────────────────────────────────────────────────────
+// ── Render Results ────────────────────────────────────────────────────────────
 function renderResults(data) {
-  const { advice, missingFields } = data;
+  const { results, conditions, summary } = data;
 
-  // Draw chart
-  drawChart(advice);
+  renderSummaryBanner(summary, results);
+  renderConditions(conditions);
+  renderChart(results);
+  renderParamCards(results);
 
-  // Draw param cards
-  const container = document.getElementById("paramCards");
-  container.innerHTML = "";
-
-  const configs = [
-    { key: "hemoglobin",  icon: "🩸", label: "Hemoglobin", unit: "g/dL",  max: 20,  normalMin: 12,  normalMax: 17.5 },
-    { key: "glucose",     icon: "🍬", label: "Blood Glucose", unit: "mg/dL", max: 400, normalMin: 70, normalMax: 100 },
-    { key: "cholesterol", icon: "🫀", label: "Total Cholesterol", unit: "mg/dL", max: 400, normalMin: 0, normalMax: 200 },
-  ];
-
-  for (const cfg of configs) {
-    const a = advice[cfg.key];
-    if (!a) {
-      // Missing — show small placeholder
-      const div = document.createElement("div");
-      div.className = "param-card";
-      div.innerHTML = `
-        <div class="param-header" style="background:#f5f5f5;">
-          <span class="param-icon">${cfg.icon}</span>
-          <div class="param-info">
-            <div class="param-name">${cfg.label}</div>
-            <span class="param-badge" style="background:#e0e0e0;color:#888;">Not provided</span>
-          </div>
-        </div>
-        <div class="param-body">
-          <p style="color:var(--text-muted);font-size:0.88rem;">No value was entered for ${cfg.label}. Enter a value and re-analyze to get advice.</p>
-        </div>
-      `;
-      container.appendChild(div);
-      continue;
-    }
-
-    const pct = Math.min((a.value / cfg.max) * 100, 100);
-    const normalMinPct = (cfg.normalMin / cfg.max) * 100;
-    const normalMaxPct = (cfg.normalMax / cfg.max) * 100;
-
-    const card = document.createElement("div");
-    card.className = "param-card";
-    card.innerHTML = `
-      <div class="param-header ${a.color}">
-        <span class="param-icon">${cfg.icon}</span>
-        <div class="param-info">
-          <div class="param-name">${cfg.label}</div>
-          <span class="param-badge badge-${a.color}">${a.status}</span>
-        </div>
-        <div class="param-value-box">
-          <div class="param-value-num color-${a.color}">${a.value}</div>
-          <div class="param-value-unit">${cfg.unit}</div>
-        </div>
-      </div>
-      <div class="param-body">
-        <p class="param-explanation">${a.explanation}</p>
-
-        <!-- Mini progress bar -->
-        <div class="mini-bar-wrap">
-          <label>
-            <span>0</span>
-            <span>Normal range: ${cfg.normalMin}–${cfg.normalMax} ${cfg.unit}</span>
-            <span>${cfg.max}+</span>
-          </label>
-          <div class="mini-bar-bg">
-            <div class="mini-bar-fill ${a.color}" style="width:0%" data-target="${pct}"></div>
-            <div class="mini-bar-marker" style="left:${normalMinPct}%" title="Normal min"></div>
-            <div class="mini-bar-marker" style="left:${normalMaxPct}%" title="Normal max"></div>
-          </div>
-        </div>
-
-        <!-- Advice -->
-        <div class="advice-grid">
-          <div class="advice-box eat">
-            <div class="advice-title">✅ What to Eat</div>
-            <ul class="advice-list">
-              ${a.consume.map(item => `<li>${item}</li>`).join("")}
-            </ul>
-          </div>
-          <div class="advice-box avoid">
-            <div class="advice-title">🚫 What to Avoid</div>
-            <ul class="advice-list">
-              ${a.avoid.map(item => `<li>${item}</li>`).join("")}
-            </ul>
-          </div>
-        </div>
-      </div>
-    `;
-    container.appendChild(card);
-  }
-
-  // Animate progress bars
-  setTimeout(() => {
-    document.querySelectorAll(".mini-bar-fill[data-target]").forEach(el => {
-      el.style.width = el.dataset.target + "%";
-    });
-  }, 100);
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-// ── Chart.js ──────────────────────────────────────────────────────────────
-function drawChart(advice) {
+function renderSummaryBanner(summary, results) {
+  const el = document.getElementById("summaryBanner");
+  const icons = { danger: "🚨", warning: "⚠️", success: "✅" };
+
+  const danger  = Object.values(results).filter(r => r.color === "danger").length;
+  const warning = Object.values(results).filter(r => r.color === "warning").length;
+  const normal  = Object.values(results).filter(r => r.color === "success").length;
+
+  el.className = `summary-banner ${summary.overallColor}`;
+  el.innerHTML = `
+    <div class="sb-icon">${icons[summary.overallColor]}</div>
+    <div class="sb-text">
+      <div class="sb-title">Overall Health Summary</div>
+      <div class="sb-desc">${summary.overall} Out of <strong>${summary.total}</strong> parameters analyzed.</div>
+      <div class="sb-stats">
+        ${danger  ? `<span class="sb-stat danger">${danger} Critical</span>` : ""}
+        ${warning ? `<span class="sb-stat warning">${warning} Borderline</span>` : ""}
+        ${normal  ? `<span class="sb-stat success">${normal} Normal</span>` : ""}
+      </div>
+    </div>
+  `;
+}
+
+function renderConditions(conditions) {
+  const sec = document.getElementById("conditionSection");
+  const grid = document.getElementById("conditionCards");
+
+  if (!conditions || conditions.length === 0) {
+    sec.classList.add("hidden");
+    return;
+  }
+  sec.classList.remove("hidden");
+  grid.innerHTML = "";
+
+  conditions.forEach((c, i) => {
+    const div = document.createElement("div");
+    div.className = `cond-card ${c.severity}`;
+    div.style.animationDelay = (i * 0.07) + "s";
+    div.innerHTML = `
+      <div class="cond-head">
+        <span class="cond-icon">${c.icon}</span>
+        <span class="cond-name">${c.name}</span>
+        <span class="cond-sev">${c.severity === "danger" ? "URGENT" : "MONITOR"}</span>
+      </div>
+      <div class="cond-summary">${c.summary}</div>
+      <div class="cond-action">💡 ${c.action}</div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function renderChart(results) {
   const canvas = document.getElementById("healthChart");
   if (!canvas) return;
-
-  // Destroy previous chart instance
   if (healthChart) { healthChart.destroy(); healthChart = null; }
 
-  const labels = [], values = [], colors = [], maxVals = [];
-  const thresholds = { hemoglobin: [12, 17.5], glucose: [70, 100], cholesterol: [0, 200] };
-  const fullLabels = { hemoglobin: "Hemoglobin (g/dL)", glucose: "Glucose (mg/dL)", cholesterol: "Cholesterol (mg/dL)" };
-  const colorMap = { success: "#3bb56c", warning: "#e8913a", danger: "#d94f4f" };
-  const normalLineVals = [];
+  const labels = [], vals = [], colors = [], normals = [];
+  const colorMap = { success: "#34c97a", warning: "#f5a623", danger: "#e05252" };
 
-  for (const [key, a] of Object.entries(advice)) {
-    labels.push(fullLabels[key]);
-    values.push(a.value);
-    colors.push(colorMap[a.color]);
-    normalLineVals.push(thresholds[key][1]);
+  for (const [key, r] of Object.entries(results)) {
+    const m = PARAM_META[key];
+    if (!m) continue;
+    const pct = Math.min((r.value / m.max) * 100, 100);
+    labels.push(m.label);
+    vals.push(r.value);
+    colors.push(colorMap[r.color]);
+    normals.push(m.normalMax);
   }
 
-  if (labels.length === 0) return;
+  // Dynamically size chart width based on number of bars
+  const w = Math.max(500, labels.length * 68);
+  document.getElementById("chartContainer").style.width = w + "px";
 
   healthChart = new Chart(canvas, {
     type: "bar",
@@ -417,20 +372,20 @@ function drawChart(advice) {
       datasets: [
         {
           label: "Your Value",
-          data: values,
-          backgroundColor: colors.map(c => c + "cc"),
+          data: vals,
+          backgroundColor: colors.map(c => c + "bb"),
           borderColor: colors,
           borderWidth: 2,
-          borderRadius: 8,
+          borderRadius: 6,
           borderSkipped: false,
         },
         {
           label: "Upper Normal Limit",
-          data: normalLineVals,
+          data: normals,
           type: "line",
-          borderColor: "#aaa",
+          borderColor: "rgba(160,180,200,0.5)",
           borderWidth: 1.5,
-          borderDash: [6, 4],
+          borderDash: [6,4],
           pointStyle: false,
           fill: false,
           tension: 0,
@@ -439,73 +394,125 @@ function drawChart(advice) {
     },
     options: {
       responsive: true,
-      maintainAspectRatio: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: ctx => {
-              if (ctx.datasetIndex === 0) return ` Your value: ${ctx.raw}`;
-              return ` Upper normal: ${ctx.raw}`;
-            },
-          },
-        },
+            label: ctx => ctx.datasetIndex === 0
+              ? ` Your value: ${ctx.raw}`
+              : ` Upper normal: ${ctx.raw}`
+          }
+        }
       },
       scales: {
         y: {
           beginAtZero: true,
-          grid: { color: "#e8eee9" },
-          ticks: { font: { family: "'DM Sans', sans-serif", size: 11 } },
+          grid:  { color: "rgba(50,80,110,0.35)" },
+          ticks: { color: "#5a7a96", font: { family: "'Outfit', sans-serif", size: 11 } },
         },
         x: {
-          grid: { display: false },
-          ticks: { font: { family: "'DM Sans', sans-serif", size: 11 } },
-        },
-      },
-    },
+          grid:  { display: false },
+          ticks: { color: "#5a7a96", font: { family: "'Outfit', sans-serif", size: 10 }, maxRotation: 45 },
+        }
+      }
+    }
   });
-
-  // Legend
-  const legendEl = document.getElementById("chartLegend");
-  legendEl.innerHTML = `
-    <div class="legend-item"><span class="legend-dot" style="background:#3bb56c"></span> Normal</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#e8913a"></span> Borderline</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#d94f4f"></span> High Risk</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#aaa;border-radius:2px;width:16px;height:3px;margin:auto 0"></span> Normal limit (dashed)</div>
-  `;
 }
 
-// ── Reset ─────────────────────────────────────────────────────────────────
-function resetApp() {
-  // Clear inputs
-  ["inputHemoglobin", "inputGlucose", "inputCholesterol"].forEach(id => {
-    document.getElementById(id).value = "";
-  });
-  // Clear OCR state
-  extractedOCR = { hemoglobin: null, glucose: null, cholesterol: null };
-  document.getElementById("fileInput").value = "";
-  hideEl("ocrPreview");
-  hideEl("ocrProgress");
-  hideEl("extractedValues");
+function renderParamCards(results) {
+  const container = document.getElementById("paramResults");
+  container.innerHTML = "";
 
-  // Switch views
-  hideEl("resultsSection");
-  showEl("inputSection");
+  // Order: first critical, then warning, then normal
+  const ordered = Object.entries(results).sort((a, b) => {
+    const rank = { danger: 0, warning: 1, success: 2 };
+    return rank[a[1].color] - rank[b[1].color];
+  });
+
+  ordered.forEach(([key, r], i) => {
+    const m = PARAM_META[key];
+    if (!m) return;
+
+    const pct = Math.min((r.value / m.max) * 100, 100).toFixed(1);
+    const normalMinPct = ((m.normalMin / m.max) * 100).toFixed(1);
+    const normalMaxPct = ((m.normalMax / m.max) * 100).toFixed(1);
+
+    const card = document.createElement("div");
+    card.className = "pr-card";
+    card.style.animationDelay = (i * 0.06) + "s";
+
+    card.innerHTML = `
+      <div class="pr-header ${r.color}">
+        <span class="pr-icon">${m.icon}</span>
+        <div class="pr-info">
+          <div class="pr-name">${m.label}</div>
+          <span class="pr-badge badge-${r.color}">${r.status}</span>
+        </div>
+        <div class="pr-val">
+          <div class="pr-num ${r.color}">${r.value}</div>
+          <div class="pr-unit">${m.unit}</div>
+        </div>
+      </div>
+      <div class="pr-body">
+        <div class="pr-explanation ${r.color}">${r.explanation}</div>
+
+        <div class="mini-bar">
+          <div class="mini-bar-label">
+            <span>0</span>
+            <span>Normal: ${m.normalMin}–${m.normalMax} ${m.unit}</span>
+            <span>${m.max}+</span>
+          </div>
+          <div class="mini-bar-bg">
+            <div class="mini-bar-fill ${r.color}" style="width:0%" data-target="${pct}%"></div>
+          </div>
+        </div>
+
+        <div class="advice-grid">
+          <div class="advice-box advice-eat">
+            <div class="advice-box-title">✅ What to Consume</div>
+            <ul class="advice-list">${r.consume.map(x => `<li>${x}</li>`).join("")}</ul>
+          </div>
+          <div class="advice-box advice-avoid">
+            <div class="advice-box-title">🚫 What to Avoid</div>
+            <ul class="advice-list">${r.avoid.map(x => `<li>${x}</li>`).join("")}</ul>
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll(".mini-bar-fill[data-target]").forEach(el => {
+      el.style.width = el.dataset.target;
+    });
+  }, 120);
+}
+
+// ── Reset ─────────────────────────────────────────────────────────────────────
+function resetAll() {
+  // Clear all fields
+  for (const key of Object.keys(PARAM_META)) {
+    const el = document.getElementById("f_" + key);
+    if (el) el.value = "";
+  }
+  document.getElementById("fileInput").value = "";
+  hide("ocrPreview"); hide("ocrProgress"); hide("extractedValues");
+  hide("resultsSection");
+  show("inputSection");
   hideError();
   switchTab("manual");
-
-  // Destroy chart
   if (healthChart) { healthChart.destroy(); healthChart = null; }
-
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-// ── Utilities ─────────────────────────────────────────────────────────────
-function showEl(id) { document.getElementById(id)?.classList.remove("hidden"); }
-function hideEl(id) { document.getElementById(id)?.classList.add("hidden"); }
+// ── Utilities ─────────────────────────────────────────────────────────────────
+function show(id) { document.getElementById(id)?.classList.remove("hidden"); }
+function hide(id) { document.getElementById(id)?.classList.add("hidden"); }
 function showError(msg) {
   const el = document.getElementById("errorMsg");
-  el.textContent = msg;
-  el.classList.remove("hidden");
+  el.textContent = msg; el.classList.remove("hidden");
 }
-function hideError() { hideEl("errorMsg"); }
+function hideError() { hide("errorMsg"); }
