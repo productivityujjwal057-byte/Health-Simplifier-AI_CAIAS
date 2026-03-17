@@ -1,35 +1,63 @@
 # AI Health Simplifier 🧠
 
-## About the Project
-**AI Health Analyzer** is a web-based prototype designed to make medical lab reports **easy to understand for everyone**, especially for users with minimal medical knowledge.  
-This hackathon progress version implements **manual entry of medical parameters** and provides **personalized advice on what to consume or avoid** based on the entered values.  
+## 🚀 Project Overview
+AI Health simplifier is a web-based application designed to simplify medical lab reports and make healthcare insights accessible to everyone.
 
-> This is the **first milestone** of our project. The next milestone will add **OCR-based automatic report scanning** with AI explanation.
+The system allows users to:
+1. Manually enter medical parameters
+2. Upload lab reports (image/PDF) for automatic analysis using OCR
 
----
-
-## Features Implemented (Phase 1)
-- **Manual entry** of medical parameters:  
-  - Hemoglobin, Glucose, Cholesterol, Blood Group, etc.
-- **Backend analysis** using Node.js & Express.js  
-- **Consume / Avoid advice** generated for each parameter  
-- **Visual representation** of parameter values using **bar charts** (Chart.js)  
-- **User-friendly interface** with basic styling for quick testing  
+The goal is to convert complex medical data into **simple, understandable advice** for users, especially in rural and non-technical environments.
 
 ---
 
-## Tech Stack
-- **Frontend:** HTML, CSS, JavaScript, Chart.js  
+## ✨ Features
+
+### ✅ Phase 1: Manual Entry
+- Enter parameters like Hemoglobin, Glucose, Cholesterol
+- Get instant analysis
+- Receive:
+  - What to **consume**
+  - What to **avoid**
+- Visual charts for better understanding
+
+---
+
+### 🤖 Phase 2: AI Report Scanner (NEW)
+- Upload medical report (image/PDF)
+- Extract text using **Tesseract.js OCR**
+- Automatically detect key parameters
+- Analyze report instantly
+- Generate:
+  - Simple explanation (easy English)
+  - Consume / Avoid suggestions
+  - Visual representation
+
+---
+
+## 🧠 Problem Statement
+Medical reports are difficult to understand for common people. Many patients, especially in rural areas, cannot interpret values like hemoglobin or cholesterol.
+
+---
+
+## 💡 Solution
+Our system:
+- Converts reports into **simple language**
+- Gives **actionable advice**
+- Removes dependency on technical medical knowledge
+
+---
+
+## 🛠️ Tech Stack
+- **Frontend:** HTML, CSS, JavaScript  
 - **Backend:** Node.js, Express.js  
-- **Data:** JSON-based advice logic (for quick prototyping)  
-- **Future:** OCR integration (Tesseract.js) for automatic report scanning  
+- **OCR:** Tesseract.js  
+- **Visualization:** Chart.js  
+- **Data Handling:** JSON-based logic  
 
 ---
 
-## How to Run (Local Setup)
-1. Clone the repository:
-   ```bash
-   git clone <your-repo-url>
+##  How to Run
 
 ## install dependencies
 npm install
