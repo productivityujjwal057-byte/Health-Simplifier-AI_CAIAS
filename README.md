@@ -50,6 +50,8 @@
 
 ---
 
+## 🌐 Live Deployment: https://health-simplifier-ai-caias.onrender.com
+
 ## 🔬 About the Project
 
 **Health Simplifier AI** is a full-stack web application that transforms confusing medical reports into clear, actionable health insights. Instead of Googling medical terms in panic, users get instant plain-language explanations of every blood value — along with what to eat, what to avoid, and when to see a doctor.
@@ -577,6 +579,9 @@ Contributions make the open-source community amazing! Any contributions are **gr
 5. Add `<option>` to the dropdown in `#paramSelect`
 
 ---
+
+
+
 
 ## ⚠️ Disclaimer
 
