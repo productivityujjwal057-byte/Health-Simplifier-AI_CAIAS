@@ -60,233 +60,182 @@ let addedParams = {}; // key → value
 let healthChart = null;
 let hbType = "heart";
 
-// ── Dropdown Change Handler ──────────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", () => {
-  const sel = document.getElementById("paramSelect");
-  if (sel) {
-    sel.addEventListener("change", function() {
-      const m = PARAM_META[this.value];
-      document.getElementById("refHint").textContent = m ? m.ref : "Select a parameter to see reference range";
-      document.getElementById("paramValue").placeholder = m ? "Enter value in "+m.unit+"…" : "Enter value…";
-      document.getElementById("paramValue").focus();
-    });
-  }
-  // Init HB switcher styling
-  const hs = document.getElementById("hbsSwitchHeart");
-  const bs = document.getElementById("hbsSwitchBrain");
-  if (hs) hs.classList.add("heart");
-  if (bs) bs.classList.add("brain");
-});
-
-// ── Add Parameter (manual entry dropdown) ────────────────────────────────────
-function addParam() {
-  const key    = document.getElementById("paramSelect").value;
-  const rawVal = document.getElementById("paramValue").value.trim();
-  const errEl  = document.getElementById("manualError");
-  errEl.classList.add("hidden");
-
-  if (!key)    { errEl.textContent="Please select a parameter from the dropdown."; errEl.classList.remove("hidden"); return; }
-  if (!rawVal) { errEl.textContent="Please enter a value."; errEl.classList.remove("hidden"); return; }
-
-  const val = parseFloat(rawVal);
-  if (isNaN(val)) { errEl.textContent="Please enter a valid number."; errEl.classList.remove("hidden"); return; }
-
-  const [lo, hi] = BOUNDS[key];
-  if (val < lo || val > hi) {
-    errEl.textContent="Value "+val+" is outside the valid range ("+lo+"–"+hi+") for "+PARAM_META[key].label+". Please check.";
-    errEl.classList.remove("hidden"); return;
-  }
-
-  addedParams[key] = val;
-  renderChips();
-  document.getElementById("paramSelect").value = "";
-  document.getElementById("paramValue").value  = "";
-  document.getElementById("refHint").textContent = "Select a parameter to see reference range";
-}
-
-function removeParam(key) { delete addedParams[key]; renderChips(); }
-function clearAllParams() { addedParams = {}; renderChips(); }
-
-function renderChips() {
-  const container = document.getElementById("addedParams");
-  const chips     = document.getElementById("paramChips");
-  if (!chips) return;
-  chips.innerHTML = "";
-  if (Object.keys(addedParams).length === 0) { container.classList.add("hidden"); return; }
-  container.classList.remove("hidden");
-  for (const [key, val] of Object.entries(addedParams)) {
-    const m = PARAM_META[key];
-    const chip = document.createElement("div");
-    chip.className = "chip";
-    chip.innerHTML = `<span class="chip-name">${m.icon} ${m.label}</span><span class="chip-val">${val}</span><span class="chip-unit">${m.unit}</span><button class="chip-del" onclick="removeParam('${key}')" title="Remove">✕</button>`;
-    chips.appendChild(chip);
-  }
-}
-
 // ── Tab Switching ───────────────────────────────────────────────────────────
 function switchTab(tab) {
   currentTab = tab;
-
-  // Explicitly show/hide each panel using exact IDs
-  const panels = { manual: "panelManual", upload: "panelUpload", hb: "panelHB" };
-  const tabs   = { manual: "tabManual",   upload: "tabUpload",   hb: "tabHB"   };
-
-  Object.keys(panels).forEach(t => {
-    const panel = document.getElementById(panels[t]);
-    const btn   = document.getElementById(tabs[t]);
-    if (panel) panel.style.display = (t === tab) ? "block" : "none";
-    if (btn)   btn.classList.toggle("active", t === tab);
+  ["manual","upload","hb"].forEach(t => {
+    document.getElementById("panel"+cap(t)).classList.toggle("hidden", t !== tab);
+    document.getElementById("tab"+cap(t)).classList.toggle("active", t === tab);
   });
-
-  // Show/hide analyze button
-  const analyzeBtn = document.getElementById("btnAnalyze");
-  if (analyzeBtn) {
-    analyzeBtn.style.display = (tab === "hb") ? "none" : "block";
-    analyzeBtn.textContent = tab === "upload" ? "🔬 Analyze Detected Values" : "🔬 Analyze My Blood Report";
-  }
+  const btn = document.getElementById("btnAnalyze");
+  btn.classList.toggle("hidden-btn", tab === "hb");
+  btn.textContent = tab === "upload" ? "🔬 Analyze Detected Values" : "🔬 Analyze My Blood Report";
   hideError();
 }
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
 // ── HB Type ─────────────────────────────────────────────────────────────────
-// ── HB Section Switcher ─────────────────────────────────────────────────────
-let currentHBSection = 'heart';
-let pendingFiles = { heart: null, brain: null };
-
-function switchHBSection(sec) {
-  currentHBSection = sec;
-  hbType = sec;
-
-  // Switcher buttons
-  const hBtn = document.getElementById('hbsSwitchHeart');
-  const bBtn = document.getElementById('hbsSwitchBrain');
-  if (hBtn) hBtn.className = 'hbs-btn' + (sec === 'heart' ? ' active heart' : '');
-  if (bBtn) bBtn.className = 'hbs-btn' + (sec === 'brain' ? ' active brain' : '');
-
-  // Sections — use inline style for reliability
-  const heartSec = document.getElementById('hbSectionHeart');
-  const brainSec = document.getElementById('hbSectionBrain');
-  if (heartSec) heartSec.style.display = (sec === 'heart') ? 'block' : 'none';
-  if (brainSec) brainSec.style.display = (sec === 'brain') ? 'block' : 'none';
+function setHBType(type) {
+  hbType = type;
+  document.getElementById("hbTypeHeart").classList.toggle("active", type === "heart");
+  document.getElementById("hbTypeBrain").classList.toggle("active", type === "brain");
+  document.getElementById("hbUploadIcon").textContent  = type === "heart" ? "🫀" : "🧠";
+  document.getElementById("hbUploadTitle").textContent = type === "heart" ? "Drop your ECG or Cardiology Report here" : "Drop your Brain MRI or Neurology Report here";
 }
 
-// Keep old setHBType for backward compat (called from nowhere now)
-function setHBType(type) { switchHBSection(type); }
+// ── Param Dropdown ──────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("paramSelect").addEventListener("change", function() {
+    const m = PARAM_META[this.value];
+    document.getElementById("refHint").textContent = m ? m.ref : "Select a parameter to see reference range";
+    document.getElementById("paramValue").placeholder = m ? `Enter value in ${m.unit}…` : "Enter value…";
+    document.getElementById("paramValue").focus();
+  });
+});
 
-// ── Per-section drag & drop ──────────────────────────────────────────────────
-function secDragEnter(e, sec) {
-  e.preventDefault();
-  document.getElementById(sec+'DropZone').classList.add('dz-active');
-  document.getElementById(sec+'DZOverlay').classList.remove('hidden');
+function addParam() {
+  const key = document.getElementById("paramSelect").value;
+  const rawVal = document.getElementById("paramValue").value.trim();
+  const errEl  = document.getElementById("manualError");
+
+  errEl.classList.add("hidden");
+
+  if (!key) { errEl.textContent = "Please select a parameter from the dropdown."; errEl.classList.remove("hidden"); return; }
+  if (!rawVal) { errEl.textContent = "Please enter a value."; errEl.classList.remove("hidden"); return; }
+
+  const val = parseFloat(rawVal);
+  if (isNaN(val)) { errEl.textContent = "Please enter a valid number."; errEl.classList.remove("hidden"); return; }
+
+  const [lo, hi] = BOUNDS[key];
+  if (val < lo || val > hi) {
+    errEl.textContent = `Value ${val} is outside the valid physiological range (${lo}–${hi}) for ${PARAM_META[key].label}. Please check and re-enter.`;
+    errEl.classList.remove("hidden"); return;
+  }
+
+  addedParams[key] = val;
+  renderChips();
+
+  // Reset inputs
+  document.getElementById("paramSelect").value = "";
+  document.getElementById("paramValue").value  = "";
+  document.getElementById("refHint").textContent = "Select a parameter to see reference range";
 }
-function secDragOver(e, sec) {
-  e.preventDefault();
-  document.getElementById(sec+'DropZone').classList.add('dz-active');
-  document.getElementById(sec+'DZOverlay').classList.remove('hidden');
+
+function removeParam(key) {
+  delete addedParams[key];
+  renderChips();
 }
-function secDragLeave(e, sec) {
-  const zone = document.getElementById(sec+'DropZone');
-  if (!zone.contains(e.relatedTarget)) {
-    zone.classList.remove('dz-active');
-    document.getElementById(sec+'DZOverlay').classList.add('hidden');
+
+function clearAllParams() {
+  addedParams = {};
+  renderChips();
+}
+
+function renderChips() {
+  const container = document.getElementById("addedParams");
+  const chips = document.getElementById("paramChips");
+  chips.innerHTML = "";
+
+  if (Object.keys(addedParams).length === 0) {
+    container.classList.add("hidden"); return;
+  }
+  container.classList.remove("hidden");
+
+  for (const [key, val] of Object.entries(addedParams)) {
+    const m = PARAM_META[key];
+    const chip = document.createElement("div");
+    chip.className = "chip";
+    chip.innerHTML = `
+      <span class="chip-name">${m.icon} ${m.label}</span>
+      <span class="chip-val">${val}</span>
+      <span class="chip-unit">${m.unit}</span>
+      <button class="chip-del" onclick="removeParam('${key}')" title="Remove">✕</button>
+    `;
+    chips.appendChild(chip);
   }
 }
-function secDrop(e, sec) {
-  e.preventDefault();
-  document.getElementById(sec+'DropZone').classList.remove('dz-active');
-  document.getElementById(sec+'DZOverlay').classList.add('hidden');
-  const f = e.dataTransfer.files[0];
-  if (f) secSetFile(f, sec);
-}
-function secFileSelect(e, sec) {
-  const f = e.target.files[0];
-  if (f) secSetFile(f, sec);
-}
 
-function secSetFile(file, sec) {
-  const valid = ['image/jpeg','image/png','image/gif','image/webp','application/pdf'];
-  if (!valid.includes(file.type)) { showError('Please upload a JPG, PNG, or PDF file.'); return; }
-  pendingFiles[sec] = file;
+// ── Upload (Blood) ──────────────────────────────────────────────────────────
+function handleDragOver(e) { e.preventDefault(); document.getElementById("uploadZone").classList.add("dragover"); }
+function handleDrop(e) { e.preventDefault(); document.getElementById("uploadZone").classList.remove("dragover"); const f=e.dataTransfer.files[0]; if(f) processBloodFile(f); }
+function handleFileUpload(e) { const f=e.target.files[0]; if(f) processBloodFile(f); }
 
-  const card = document.getElementById(sec+'FileCard');
-  document.getElementById(sec+'FCIcon').textContent = file.type==='application/pdf' ? '📋' : '🖼️';
-  document.getElementById(sec+'FCName').textContent = file.name;
-  document.getElementById(sec+'FCSize').textContent = formatFileSize(file.size);
-  card.classList.remove('hidden');
-  hideError();
-}
-
-function secRemove(sec) {
-  pendingFiles[sec] = null;
-  document.getElementById(sec+'FileCard').classList.add('hidden');
-  document.getElementById('fileInput'+capitalize(sec)).value = '';
-  hide(sec+'OCRProgress'); hide(sec+'OCRPreview');
-  hideError();
-}
-
-async function secAnalyze(sec) {
-  const file = pendingFiles[sec];
-  if (!file) { showError('No file selected.'); return; }
-  hbType = sec;
-  await secProcessFile(file, sec);
-}
-
-function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-
-async function secProcessFile(file, sec) {
-  show(sec+'OCRProgress'); hide(sec+'OCRPreview');
-  document.getElementById(sec+'OCRBar').style.width = '5%';
-  document.getElementById(sec+'OCRStatus').textContent = 'Reading: '+file.name+'…';
+async function processBloodFile(file) {
+  if (!["image/jpeg","image/png","image/gif","image/webp","application/pdf"].includes(file.type)) {
+    showError("Please upload JPG, PNG, or PDF."); return;
+  }
+  show("ocrProgress"); hide("ocrPreview"); hide("extractedValues");
+  setOCRProgress("progressBar","ocrStatus", 5, `Reading: ${file.name}…`);
 
   try {
-    const imgUrl = file.type==='application/pdf' ? await pdfToImage(file) : await fileToDataUrl(file);
-    document.getElementById(sec+'OCRBar').style.width = '20%';
-    document.getElementById(sec+'OCRStatus').textContent = 'OCR engine loading…';
+    const imgUrl = file.type==="application/pdf" ? await pdfToImage(file) : await fileToDataUrl(file);
+    setOCRProgress("progressBar","ocrStatus", 20, "OCR engine loading…");
 
-    const worker = await Tesseract.createWorker('eng', 1, {
-      logger: m => {
-        if (m.status==='recognizing text') {
-          const pct = Math.round(m.progress*60)+25;
-          document.getElementById(sec+'OCRBar').style.width = pct+'%';
-          document.getElementById(sec+'OCRStatus').textContent = 'Scanning… '+Math.round(m.progress*100)+'%';
-        }
-      }
+    const worker = await Tesseract.createWorker("eng", 1, {
+      logger: m => { if(m.status==="recognizing text") setOCRProgress("progressBar","ocrStatus", Math.round(m.progress*60)+25, `Scanning… ${Math.round(m.progress*100)}%`); }
     });
-    document.getElementById(sec+'OCRBar').style.width = '88%';
-    document.getElementById(sec+'OCRStatus').textContent = 'Analyzing…';
+    setOCRProgress("progressBar","ocrStatus", 85, "Extracting values…");
     const { data:{ text } } = await worker.recognize(imgUrl);
     await worker.terminate();
 
-    document.getElementById(sec+'OCRText').textContent = text.trim() || '(No text detected)';
-    show(sec+'OCRPreview');
-    document.getElementById(sec+'OCRBar').style.width = '100%';
-    document.getElementById(sec+'OCRStatus').textContent = 'Done!';
-    setTimeout(() => hide(sec+'OCRProgress'), 700);
+    setOCRProgress("progressBar","ocrStatus", 95, "Parsing…");
+    document.getElementById("ocrRawText").textContent = text.trim() || "(No text detected)";
+    show("ocrPreview");
 
-    await sendHBForAnalysis(text);
-  } catch(err) {
-    hide(sec+'OCRProgress');
-    showError('OCR failed: '+(err.message || 'Unknown error.'));
+    const extracted = extractBloodValues(text);
+    // Merge into addedParams
+    for (const [k,v] of Object.entries(extracted)) {
+      if (v !== null) addedParams[k] = v;
+    }
+    renderChips();
+    renderExtractedChips(extracted);
+    setOCRProgress("progressBar","ocrStatus", 100, "Done!");
+    setTimeout(() => hide("ocrProgress"), 700);
+
+    const found = Object.values(extracted).filter(v=>v!==null).length;
+    if (!found) {
+      showError("⚠️ Could not automatically detect values. Image may be unclear. Please enter values manually in Tab 1.");
+    }
+  } catch (err) {
+    hide("ocrProgress");
+    showError("OCR failed: " + (err.message || "Unknown error."));
   }
 }
 
-// ── Legacy handlers (still referenced from old HTML in case) ─────────────────
-function handleDragOverHB(e) { e.preventDefault(); }
-function handleDropHB(e) { e.preventDefault(); }
-function handleFileUploadHB(e) {}
-function hbDragEnter(e) { e.preventDefault(); }
-function hbDragLeave(e) {}
+// ── Upload (Heart & Brain) ──────────────────────────────────────────────────
+function handleDragOverHB(e) { e.preventDefault(); document.getElementById("uploadZoneHB").classList.add("dragover"); }
+function handleDropHB(e) { e.preventDefault(); document.getElementById("uploadZoneHB").classList.remove("dragover"); const f=e.dataTransfer.files[0]; if(f) processHBFile(f); }
+function handleFileUploadHB(e) { const f=e.target.files[0]; if(f) processHBFile(f); }
 
-// Keep for old file card
-let pendingHBFile = null;
-function removeHBFile() {}
-async function analyzeHBFile() {}
+async function processHBFile(file) {
+  if (!["image/jpeg","image/png","image/gif","image/webp","application/pdf"].includes(file.type)) {
+    showError("Please upload JPG, PNG, or PDF."); return;
+  }
+  show("ocrProgressHB"); hide("ocrPreviewHB");
+  setOCRProgress("progressBarHB","ocrStatusHB", 5, `Reading: ${file.name}…`);
 
-// Toggle test card expand/collapse
-function toggleTestCard(card) {
-  card.classList.toggle('open');
+  try {
+    const imgUrl = file.type==="application/pdf" ? await pdfToImage(file) : await fileToDataUrl(file);
+    setOCRProgress("progressBarHB","ocrStatusHB", 20, "OCR engine loading…");
+
+    const worker = await Tesseract.createWorker("eng", 1, {
+      logger: m => { if(m.status==="recognizing text") setOCRProgress("progressBarHB","ocrStatusHB", Math.round(m.progress*60)+25, `Scanning… ${Math.round(m.progress*100)}%`); }
+    });
+    setOCRProgress("progressBarHB","ocrStatusHB", 88, "Analyzing report…");
+    const { data:{ text } } = await worker.recognize(imgUrl);
+    await worker.terminate();
+
+    document.getElementById("ocrRawTextHB").textContent = text.trim() || "(No text detected)";
+    show("ocrPreviewHB");
+    setOCRProgress("progressBarHB","ocrStatusHB", 100, "Done!");
+    setTimeout(() => hide("ocrProgressHB"), 700);
+
+    await sendHBForAnalysis(text);
+  } catch(err) {
+    hide("ocrProgressHB");
+    showError("OCR failed: " + (err.message || "Unknown error."));
+  }
 }
-
 
 async function sendHBForAnalysis(text) {
   hide("inputSection");
@@ -424,19 +373,11 @@ function toggleHBCard(i) {
 }
 
 function resetHB() {
-  pendingHBFile = null;
-  pendingFiles = { heart: null, brain: null };
   hide("hbResultsSection");
   show("inputSection");
   switchTab("hb");
-  // Reset heart section
-  ["heart","brain"].forEach(sec => {
-    const fc = document.getElementById(sec+"FileCard");
-    if (fc) fc.classList.add("hidden");
-    const fi = document.getElementById("fileInput"+sec.charAt(0).toUpperCase()+sec.slice(1));
-    if (fi) fi.value = "";
-    hide(sec+"OCRPreview"); hide(sec+"OCRProgress");
-  });
+  document.getElementById("fileInputHB").value = "";
+  hide("ocrPreviewHB"); hide("ocrProgressHB");
   hideError();
   window.scrollTo({ top:0, behavior:"smooth" });
 }
