@@ -1,72 +1,1195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>HealthLens AI — Complete Health Simplifier</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-  <link rel="stylesheet" href="style.css"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,maximum-scale=5"/>
+<meta name="theme-color" content="#050c15"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="description" content="Health Simplifier AI — Understand your blood reports, ECG and brain conditions in plain language. Analyze 17 blood parameters instantly."/>
+<meta name="keywords" content="blood test analyzer, health report, ECG analysis, hemoglobin, glucose, cholesterol, AI health"/>
+<meta property="og:title" content="Health Simplifier AI — Complete Health Analyzer"/>
+<meta property="og:description" content="Analyze blood reports, heart ECG findings and brain conditions in plain language."/>
+<meta property="og:type" content="website"/>
+<title>Health Simplifier AI — Complete Health Analyzer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   Health Simplifier AI v5
+   Medical Premium Dark Theme
+   Fonts: Syne (headings) + Inter (body)
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --bg:       #050c15;
+  --bg2:      #08111e;
+  --bg3:      #0c1a2e;
+  --bg4:      #112240;
+  --border:   #162d4a;
+  --border2:  #1e3d62;
+
+  --teal:     #00e5c0;
+  --teal2:    #00b896;
+  --teal3:    #007a64;
+  --teal-g:   rgba(0,229,192,0.09);
+  --teal-glow:rgba(0,229,192,0.20);
+
+  --red:      #ff4d6d;
+  --red2:     #c1121f;
+  --red-g:    rgba(255,77,109,0.09);
+
+  --gold:     #f9c74f;
+  --gold2:    #d4960a;
+  --gold-g:   rgba(249,199,79,0.09);
+
+  --purple:   #b57bee;
+  --purple2:  #7b2d8b;
+  --purple-g: rgba(181,123,238,0.09);
+
+  --sky:      #4cc9f0;
+  --sky2:     #0b6ea8;
+  --sky-g:    rgba(76,201,240,0.09);
+
+  --th:  #f0f6ff;
+  --tb:  #7a9ec0;
+  --tm:  #304d6a;
+
+  --fd:"Syne",sans-serif;
+  --fb:"Inter",sans-serif;
+  --r:14px; --rs:8px;
+  --sh:0 4px 30px rgba(0,0,0,0.55);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+body{font-family:var(--fb);background:var(--bg);color:var(--tb);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+
+
+/* iOS tap fix */
+button, a { -webkit-tap-highlight-color: transparent; cursor: pointer; }
+input, select { -webkit-appearance: none; }
+* { -webkit-overflow-scrolling: touch; }
+
+/* ── SCROLLBAR ────────────────────────── */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--teal3);border-radius:99px;}
+
+/* ══════════════════════════════════════════
+   COMPACT NAVBAR
+   ══════════════════════════════════════════ */
+#navbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:58px;
+  background:rgba(5,12,21,0.82);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(0,229,192,0.10);
+  display:flex;align-items:center;padding:0 1.5rem;gap:0;
+  transition:all 0.3s;
+}
+#navbar.scrolled{
+  background:rgba(5,12,21,0.96);
+  border-bottom-color:rgba(0,229,192,0.18);
+  box-shadow:0 2px 24px rgba(0,0,0,0.5);
+}
+
+.nav-brand{
+  display:flex;align-items:center;gap:0.55rem;
+  text-decoration:none;cursor:pointer;flex-shrink:0;margin-right:1.5rem;
+}
+.nav-logo{
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,var(--teal),var(--teal2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+  box-shadow:0 0 14px rgba(0,229,192,0.45);
+}
+.nav-brand-name{
+  font-family:var(--fd);font-size:1.1rem;color:var(--th);font-weight:700;letter-spacing:-0.3px;
+}
+.nav-ai{
+  background:var(--teal);color:#001a12;font-size:0.42em;font-weight:800;
+  padding:0.1em 0.4em;border-radius:4px;vertical-align:super;font-family:var(--fb);
+}
+
+.nav-links{display:flex;align-items:center;gap:0.15rem;flex:1;}
+.nav-link{
+  display:flex;align-items:center;gap:0.35rem;
+  padding:0.4rem 0.75rem;border-radius:var(--rs);
+  font-size:0.82rem;font-weight:500;color:var(--tm);
+  background:none;border:none;cursor:pointer;
+  font-family:var(--fb);transition:all 0.18s;white-space:nowrap;
+}
+.nav-link:hover{color:var(--th);background:var(--bg3);}
+.nav-link.active{color:var(--teal);background:var(--teal-g);}
+.nav-link .ni{font-size:0.9rem;}
+
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:0.6rem;}
+.nav-cta{
+  padding:0.38rem 1rem;border-radius:var(--rs);
+  background:linear-gradient(135deg,var(--teal),var(--teal2));
+  color:#001a12;font-weight:700;font-size:0.8rem;
+  border:none;cursor:pointer;font-family:var(--fb);
+  transition:all 0.2s;white-space:nowrap;
+  box-shadow:0 0 14px rgba(0,229,192,0.3);
+}
+.nav-cta:hover{box-shadow:0 0 22px rgba(0,229,192,0.5);transform:translateY(-1px);}
+
+.nav-toggle{display:none;background:none;border:none;color:var(--th);font-size:1.3rem;cursor:pointer;margin-left:0.5rem;}
+
+/* ══════════════════════════════════════════
+   PAGE SYSTEM
+   ══════════════════════════════════════════ */
+.page{display:none;padding-top:58px;min-height:100vh;}
+.page.active{display:block;}
+
+/* ══════════════════════════════════════════
+   HOME PAGE
+   ══════════════════════════════════════════ */
+
+/* --- Hero Video Section --- */
+.hero-section{
+  position:relative;height:100vh;min-height:600px;max-height:900px;
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+}
+
+.hero-video-wrap{
+  position:absolute;inset:0;z-index:0;
+}
+.hero-video-wrap video{
+  width:100%;height:100%;object-fit:cover;
+  filter:brightness(0.28) saturate(0.8);
+  transform:scale(1.04);
+  transition:transform 8s ease;
+}
+.hero-video-wrap::after{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(to bottom, rgba(5,12,21,0.3) 0%, transparent 30%, transparent 60%, rgba(5,12,21,0.95) 100%),
+    linear-gradient(to right, rgba(5,12,21,0.6) 0%, transparent 50%);
+  z-index:1;
+}
+
+/* Scanline overlay for medical feel */
+.hero-scanlines{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);
+  animation:scanMove 8s linear infinite;
+}
+@keyframes scanMove{0%{background-position:0 0;}100%{background-position:0 100px;}}
+
+/* Floating medical cross + heartbeat line */
+.hero-deco{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden;}
+.hero-cross{
+  position:absolute;right:8%;top:20%;
+  font-size:6rem;opacity:0.04;color:var(--teal);
+  animation:crossFloat 6s ease-in-out infinite alternate;
+}
+@keyframes crossFloat{from{transform:translateY(0) rotate(0deg);}to{transform:translateY(-20px) rotate(5deg);}}
+.hero-pulse-line{
+  position:absolute;bottom:35%;left:0;right:0;
+  height:60px;z-index:4;pointer-events:none;
+}
+
+.hero-content{
+  position:relative;z-index:10;text-align:center;
+  padding:0 1.5rem;max-width:820px;
+  animation:heroIn 1s cubic-bezier(0.22,1,0.36,1) 0.3s both;
+}
+@keyframes heroIn{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:rgba(0,229,192,0.10);border:1px solid rgba(0,229,192,0.22);
+  border-radius:999px;padding:0.35rem 1rem;
+  font-size:0.74rem;font-weight:600;color:var(--teal);
+  letter-spacing:0.8px;text-transform:uppercase;
+  margin-bottom:1.4rem;
+  animation:heroIn 1s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+}
+.eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+.hero-title{
+  font-family:var(--fd);
+  font-size:clamp(2.4rem,5.5vw,4.5rem);
+  font-weight:800;color:var(--th);
+  line-height:1.08;letter-spacing:-1.5px;
+  margin-bottom:1.2rem;
+}
+.hero-title .ht-line2{
+  display:block;
+  background:linear-gradient(90deg,var(--teal),#60efdf,var(--sky));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:gradShift 4s ease-in-out infinite alternate;
+  background-size:200%;
+}
+@keyframes gradShift{from{background-position:0%;}to{background-position:100%;}}
+
+.hero-sub{
+  font-size:1.05rem;color:var(--tb);max-width:520px;
+  margin:0 auto 2.2rem;line-height:1.75;font-weight:300;
+}
+
+.hero-btns{
+  display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;
+  animation:heroIn 1s cubic-bezier(0.22,1,0.36,1) 0.6s both;
+}
+.hb-primary{
+  display:flex;align-items:center;gap:0.5rem;
+  padding:0.8rem 1.8rem;border-radius:var(--rs);
+  background:linear-gradient(135deg,var(--teal),var(--teal2));
+  color:#001a12;font-weight:700;font-size:0.95rem;
+  border:none;cursor:pointer;font-family:var(--fb);
+  box-shadow:0 0 28px rgba(0,229,192,0.4);transition:all 0.25s;
+}
+.hb-primary:hover{transform:translateY(-3px);box-shadow:0 6px 36px rgba(0,229,192,0.55);}
+.hb-outline{
+  display:flex;align-items:center;gap:0.5rem;
+  padding:0.8rem 1.8rem;border-radius:var(--rs);
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(8px);
+  color:var(--th);font-weight:600;font-size:0.95rem;
+  border:1px solid rgba(255,255,255,0.15);cursor:pointer;font-family:var(--fb);
+  transition:all 0.25s;
+}
+.hb-outline:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-g);}
+
+.hero-scroll-hint{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  z-index:10;display:flex;flex-direction:column;align-items:center;gap:0.4rem;
+  font-size:0.72rem;color:var(--tm);letter-spacing:1px;text-transform:uppercase;
+  animation:fadeInUp 1s ease 1.5s both;
+}
+@keyframes fadeInUp{from{opacity:0;transform:translateX(-50%) translateY(10px);}to{opacity:0.7;transform:translateX(-50%) translateY(0);}}
+.scroll-arrow{
+  width:24px;height:24px;border-right:2px solid var(--tm);border-bottom:2px solid var(--tm);
+  transform:rotate(45deg);animation:arrowBounce 1.5s ease-in-out infinite;
+}
+@keyframes arrowBounce{0%,100%{transform:rotate(45deg) translateY(0);}50%{transform:rotate(45deg) translateY(5px);}}
+
+/* Stats bar */
+.stats-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  position:relative;z-index:10;
+}
+.ss-item{
+  padding:1.4rem 1rem;text-align:center;
+  border-right:1px solid var(--border);
+  transition:background 0.2s;cursor:default;
+}
+.ss-item:last-child{border-right:none;}
+.ss-item:hover{background:var(--bg3);}
+.ss-num{
+  font-family:var(--fd);font-size:1.9rem;font-weight:800;color:var(--teal);
+  line-height:1;
+}
+.ss-lbl{font-size:0.74rem;color:var(--tm);margin-top:0.3rem;letter-spacing:0.3px;}
+
+/* Section: scroll-reveal */
+.reveal{
+  opacity:0;transform:translateY(40px);
+  transition:opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1);
+}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-delay-1{transition-delay:0.1s;}
+.reveal-delay-2{transition-delay:0.2s;}
+.reveal-delay-3{transition-delay:0.3s;}
+.reveal-delay-4{transition-delay:0.4s;}
+
+/* Features section */
+.home-section{padding:5rem 0;}
+.section-label{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  font-size:0.72rem;font-weight:700;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--teal);
+  margin-bottom:0.8rem;
+}
+.section-title{
+  font-family:var(--fd);font-size:clamp(1.7rem,3vw,2.4rem);
+  color:var(--th);font-weight:800;line-height:1.15;
+  letter-spacing:-0.5px;margin-bottom:1rem;
+}
+.section-sub{font-size:0.95rem;color:var(--tb);line-height:1.75;max-width:540px;}
+
+/* Features grid */
+.features-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:1px;background:var(--border);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;margin-top:3rem;
+}
+.feat-card{
+  background:var(--bg2);padding:2rem 1.8rem;
+  cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;
+}
+.feat-card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--card-c,var(--teal)),transparent);
+  opacity:0;transition:opacity 0.3s;
+}
+.feat-card:hover{background:var(--bg3);}
+.feat-card:hover::before{opacity:1;}
+.feat-card:hover .feat-arrow{transform:translateX(5px);}
+.feat-icon-wrap{
+  width:48px;height:48px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;margin-bottom:1.1rem;
+}
+.feat-title{font-family:var(--fd);font-size:1rem;color:var(--th);font-weight:700;margin-bottom:0.4rem;}
+.feat-desc{font-size:0.83rem;color:var(--tb);line-height:1.65;}
+.feat-arrow{
+  display:flex;align-items:center;gap:0.3rem;
+  margin-top:1rem;font-size:0.8rem;font-weight:600;
+  transition:transform 0.2s;
+}
+
+/* How it works */
+.how-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:2rem;margin-top:3rem;
+}
+.how-step{text-align:center;}
+.how-num{
+  width:52px;height:52px;border-radius:50%;
+  border:2px solid var(--teal3);background:var(--teal-g);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-size:1.1rem;font-weight:800;color:var(--teal);
+  margin:0 auto 1rem;position:relative;
+}
+.how-num::after{
+  content:"";position:absolute;right:-2rem;top:50%;width:2rem;height:1px;
+  background:linear-gradient(90deg,var(--teal3),transparent);
+}
+.how-step:last-child .how-num::after{display:none;}
+.how-title{font-family:var(--fd);font-size:0.95rem;color:var(--th);font-weight:700;margin-bottom:0.35rem;}
+.how-desc{font-size:0.8rem;color:var(--tb);line-height:1.6;}
+
+/* CTA band */
+.cta-band{
+  background:linear-gradient(135deg,var(--bg3) 0%,rgba(0,229,192,0.06) 50%,var(--bg3) 100%);
+  border:1px solid rgba(0,229,192,0.15);
+  border-radius:var(--r);padding:3rem 2rem;text-align:center;
+  margin:0 0 5rem;
+  position:relative;overflow:hidden;
+}
+.cta-band::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 80% at center,rgba(0,229,192,0.07),transparent);
+  pointer-events:none;
+}
+.cta-title{font-family:var(--fd);font-size:2rem;color:var(--th);font-weight:800;margin-bottom:0.8rem;}
+.cta-sub{font-size:0.95rem;color:var(--tb);margin-bottom:1.8rem;line-height:1.7;}
+.cta-btns{display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;}
+
+/* ══════════════════════════════════════════
+   INNER PAGES (Manual, Upload, Heart, Brain)
+   ══════════════════════════════════════════ */
+.container{max-width:1040px;margin:0 auto;padding:2.5rem 1.2rem 5rem;position:relative;z-index:10;}
+
+.page-hero{
+  padding:3rem 0 2rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem;
+}
+.page-hero h1{font-family:var(--fd);font-size:2rem;color:var(--th);font-weight:800;}
+.page-hero p{font-size:0.92rem;color:var(--tb);line-height:1.65;margin-top:0.4rem;}
+.ph-icon{
+  width:56px;height:56px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;margin-bottom:1rem;
+}
+
+/* Card */
+.card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);padding:1.8rem;
+  margin-bottom:1.5rem;box-shadow:var(--sh);
+}
+
+/* Form controls */
+.field-label{font-size:0.78rem;font-weight:600;color:var(--tb);margin-bottom:0.35rem;letter-spacing:0.3px;}
+.field-hint {font-size:0.7rem;color:var(--tm);margin-top:0.25rem;}
+select.inp,input.inp{
+  width:100%;padding:0.68rem 0.95rem;
+  background:var(--bg3);border:1.5px solid var(--border);
+  border-radius:var(--rs);color:var(--th);
+  font-family:var(--fb);font-size:0.92rem;outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;appearance:none;
+}
+select.inp{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%23304d6a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 0.85rem center;padding-right:2.2rem;
+}
+select.inp option,select.inp optgroup{background:var(--bg3);color:var(--th);}
+input.inp::placeholder{color:var(--tm);}
+select.inp:focus,input.inp:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,229,192,0.10);background:var(--bg4);}
+
+.adder-row{display:grid;grid-template-columns:1fr 200px auto;gap:0.8rem;align-items:end;}
+@media(max-width:580px){.adder-row{grid-template-columns:1fr;}}
+
+.btn-add{
+  padding:0.68rem 1.3rem;background:var(--teal);color:#001a12;
+  border:none;border-radius:var(--rs);font-family:var(--fb);font-size:0.92rem;font-weight:700;
+  cursor:pointer;transition:all 0.2s;white-space:nowrap;align-self:end;
+  box-shadow:0 0 14px rgba(0,229,192,0.25);
+}
+.btn-add:hover{background:#1fffd8;transform:translateY(-1px);}
+
+.chips-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:1rem 1.1rem;margin-top:1rem;}
+.chips-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.7rem;}
+.chips-head span{font-size:0.8rem;font-weight:600;color:var(--tb);}
+.btn-clr{font-size:0.7rem;color:var(--tm);background:none;border:1px solid var(--border);border-radius:5px;padding:0.18rem 0.5rem;cursor:pointer;transition:all 0.15s;}
+.btn-clr:hover{color:var(--red);border-color:var(--red2);}
+.chips-row{display:flex;gap:0.5rem;flex-wrap:wrap;}
+.chip{
+  display:flex;align-items:center;gap:0.32rem;
+  background:var(--bg4);border:1px solid var(--border2);
+  border-radius:999px;padding:0.28rem 0.7rem;
+  font-size:0.79rem;animation:chipPop 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes chipPop{from{opacity:0;transform:scale(0.6)}to{opacity:1;transform:scale(1)}}
+.chip-lbl{color:var(--th);font-weight:600;}
+.chip-v  {color:var(--teal);font-weight:700;}
+.chip-u  {color:var(--tm);font-size:0.68rem;}
+.chip-x  {background:none;border:none;color:var(--tm);cursor:pointer;font-size:0.88rem;padding:0;transition:color 0.15s;}
+.chip-x:hover{color:var(--red);}
+
+.field-err{color:#ff8888;font-size:0.8rem;background:var(--red-g);border:1px solid var(--red2);border-radius:var(--rs);padding:0.5rem 0.8rem;margin-top:0.5rem;}
+.error-bar{color:#ff8888;font-size:0.84rem;background:var(--red-g);border:1px solid var(--red2);border-radius:var(--rs);padding:0.7rem 1rem;margin-top:0.8rem;}
+
+.btn-analyze{
+  width:100%;padding:0.95rem;margin-top:1.4rem;
+  background:linear-gradient(135deg,var(--teal),var(--teal2));
+  color:#001a12;font-family:var(--fb);font-size:1rem;font-weight:800;
+  border:none;border-radius:var(--rs);cursor:pointer;transition:all 0.25s;
+  box-shadow:0 0 26px rgba(0,229,192,0.3);letter-spacing:0.2px;
+}
+.btn-analyze:hover{transform:translateY(-2px);box-shadow:0 6px 36px rgba(0,229,192,0.45);}
+
+/* Upload drop zone */
+.drop-zone{
+  border:2px dashed var(--border2);border-radius:var(--r);
+  min-height:220px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:2.5rem;cursor:pointer;transition:all 0.25s;
+  background:var(--bg3);position:relative;overflow:hidden;
+}
+.drop-zone::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(0,229,192,0.05),transparent 70%);
+  opacity:0;transition:opacity 0.3s;
+}
+.drop-zone:hover{border-color:var(--teal);background:var(--bg4);}
+.drop-zone:hover::before{opacity:1;}
+.drop-zone.dz-over{border-color:var(--teal);border-style:solid;background:rgba(0,229,192,0.08);transform:scale(1.01);}
+.dz-pulse{position:relative;width:70px;height:70px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;}
+.dz-ring{position:absolute;inset:0;border-radius:50%;border:2px solid var(--teal);opacity:0;animation:dzR 2.5s ease-out infinite;}
+.dz-ring2{animation-delay:1.2s;}
+@keyframes dzR{0%{transform:scale(0.6);opacity:0.8;}100%{transform:scale(1.9);opacity:0;}}
+.dz-icon{font-size:2.4rem;z-index:2;transition:transform 0.2s;}
+.drop-zone:hover .dz-icon{transform:scale(1.15) rotate(-5deg);}
+.dz-title{font-family:var(--fd);font-size:1.1rem;color:var(--th);margin-bottom:0.25rem;}
+.dz-sub{font-size:0.8rem;color:var(--tm);margin-bottom:1rem;}
+.dz-div{display:flex;align-items:center;gap:0.6rem;width:100%;max-width:240px;margin-bottom:1rem;}
+.dz-div::before,.dz-div::after{content:"";flex:1;height:1px;background:var(--border);}
+.dz-div span{font-size:0.7rem;color:var(--tm);}
+.btn-browse{
+  padding:0.5rem 1.3rem;border:1.5px solid var(--teal);background:var(--teal-g);
+  color:var(--teal);border-radius:var(--rs);font-family:var(--fb);font-size:0.88rem;
+  font-weight:600;cursor:pointer;transition:all 0.2s;position:relative;z-index:2;margin-bottom:0.6rem;
+}
+.btn-browse:hover{background:rgba(0,229,192,0.16);transform:translateY(-1px);}
+.dz-fmts{font-size:0.68rem;color:var(--tm);}
+.dz-overlay{
+  position:absolute;inset:0;border-radius:calc(var(--r) - 2px);
+  background:rgba(0,229,192,0.12);pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.dz-ov-icon{font-size:2.8rem;animation:bounce 0.55s ease infinite alternate;}
+@keyframes bounce{from{transform:translateY(-8px)}to{transform:translateY(6px)}}
+.dz-ov-text{font-size:1rem;font-weight:700;color:var(--teal);margin-top:0.3rem;}
+
+.file-card{
+  display:flex;align-items:center;gap:0.9rem;padding:0.9rem 1.1rem;
+  background:var(--teal-g);border:1.5px solid var(--teal3);
+  border-radius:var(--rs);margin-top:0.7rem;animation:chipPop 0.3s ease;flex-wrap:wrap;
+}
+.fc-icon{font-size:1.9rem;flex-shrink:0;}
+.fc-info{flex:1;min-width:100px;}
+.fc-name{font-weight:700;font-size:0.88rem;color:var(--th);word-break:break-all;}
+.fc-size{font-size:0.7rem;color:var(--tm);margin-top:0.1rem;}
+.fc-acts{display:flex;gap:0.45rem;align-items:center;flex-wrap:wrap;}
+.btn-analyze-f{
+  padding:0.46rem 1rem;background:linear-gradient(135deg,var(--teal),var(--teal2));
+  color:#001a12;border:none;border-radius:var(--rs);
+  font-family:var(--fb);font-size:0.84rem;font-weight:700;cursor:pointer;transition:all 0.2s;
+}
+.btn-analyze-f:hover{transform:translateY(-1px);}
+.btn-rm{
+  width:28px;height:28px;border-radius:50%;border:1px solid var(--border2);
+  background:var(--bg3);color:var(--tm);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:0.82rem;transition:all 0.2s;
+}
+.btn-rm:hover{border-color:var(--red);color:var(--red);}
+
+.ocr-prog{
+  display:flex;align-items:center;gap:0.85rem;padding:0.9rem 1.1rem;
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);margin-top:0.9rem;
+}
+.ocr-spin{width:24px;height:24px;flex-shrink:0;border:2.5px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ocr-inf{flex:1;}
+.ocr-st{font-size:0.8rem;color:var(--teal);margin-bottom:0.28rem;}
+.ocr-bg{height:4px;background:var(--border);border-radius:999px;overflow:hidden;}
+.ocr-fill{height:100%;background:linear-gradient(90deg,var(--teal),#60efdf);border-radius:999px;transition:width 0.3s;}
+.ocr-prev-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:0.85rem;margin-top:0.9rem;}
+.ocr-prev-head{font-size:0.76rem;font-weight:600;color:var(--tm);margin-bottom:0.35rem;}
+.ocr-prev-box pre{font-size:0.72rem;color:var(--tb);white-space:pre-wrap;max-height:90px;overflow-y:auto;line-height:1.55;}
+.ext-box{background:var(--teal-g);border:1px solid rgba(0,229,192,0.18);border-radius:var(--rs);padding:0.85rem 1rem;margin-top:0.9rem;}
+.ext-head{font-size:0.82rem;font-weight:600;color:var(--teal);margin-bottom:0.55rem;}
+.ext-row{display:flex;gap:0.55rem;flex-wrap:wrap;}
+.ext-chip{background:var(--bg2);border:1px solid var(--border2);border-radius:7px;padding:0.32rem 0.65rem;}
+.ext-chip .cl{font-size:0.64rem;color:var(--tm);}
+.ext-chip .cv{font-size:0.9rem;font-weight:700;color:var(--teal);}
+
+/* Condition browser */
+.browser-head{
+  display:flex;align-items:center;gap:1.4rem;
+  padding:2rem 0 1.8rem;border-bottom:1px solid var(--border);margin-bottom:2rem;flex-wrap:wrap;
+}
+.bh-icon{
+  width:64px;height:64px;border-radius:18px;
+  display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;
+}
+.bh-icon.heart{background:linear-gradient(135deg,rgba(255,77,109,0.15),rgba(255,77,109,0.3));border:1px solid var(--red2);}
+.bh-icon.brain{background:linear-gradient(135deg,rgba(181,123,238,0.15),rgba(181,123,238,0.3));border:1px solid var(--purple2);}
+.bh-title{font-family:var(--fd);font-size:1.7rem;color:var(--th);font-weight:800;}
+.bh-sub{font-size:0.86rem;color:var(--tb);margin-top:0.3rem;line-height:1.65;}
+.cond-list{display:flex;flex-direction:column;gap:1.1rem;}
+
+.cond-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;transition:border-color 0.2s;
+  animation:revealUp 0.5s ease both;
+}
+@keyframes revealUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.cond-card.heart-c:hover{border-color:var(--red2);}
+.cond-card.brain-c:hover{border-color:var(--purple2);}
+.cond-head{
+  display:flex;align-items:center;gap:0.95rem;padding:1rem 1.3rem;
+  cursor:pointer;transition:background 0.2s;
+}
+.cond-head:hover{background:var(--bg3);}
+.cond-card.heart-c .cond-head{border-left:3px solid var(--red);}
+.cond-card.brain-c .cond-head{border-left:3px solid var(--purple);}
+.cond-card.open.heart-c .cond-head{background:var(--red-g);}
+.cond-card.open.brain-c .cond-head{background:var(--purple-g);}
+.cond-em{font-size:1.7rem;flex-shrink:0;}
+.cond-meta{flex:1;}
+.cond-nm{font-family:var(--fd);font-size:1rem;color:var(--th);font-weight:700;}
+.cond-cl{font-size:0.7rem;color:var(--tm);margin-top:0.1rem;}
+.cond-bgs{display:flex;gap:0.35rem;flex-wrap:wrap;margin-top:0.3rem;}
+.cbg{font-size:0.65rem;font-weight:700;padding:0.12em 0.5em;border-radius:999px;}
+.cbg-d{background:rgba(255,77,109,0.15);color:#ff9090;border:1px solid var(--red2);}
+.cbg-w{background:var(--gold-g);color:#ffd880;border:1px solid var(--gold2);}
+.cond-tog{color:var(--tm);flex-shrink:0;transition:transform 0.3s;font-size:0.85rem;}
+.cond-card.open .cond-tog{transform:rotate(180deg);}
+.cond-body{display:none;padding:1.2rem 1.3rem;border-top:1px solid var(--border);}
+.cond-card.open .cond-body{display:block;animation:revealUp 0.2s ease;}
+.ecg-box{
+  background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--sky);
+  border-radius:0 var(--rs) var(--rs) 0;padding:0.75rem 0.95rem;margin-bottom:1rem;
+}
+.ecg-ttl{font-size:0.7rem;font-weight:700;color:var(--sky);letter-spacing:0.6px;margin-bottom:0.28rem;}
+.ecg-txt{font-size:0.79rem;color:var(--tb);line-height:1.6;font-family:monospace;}
+.rd-box{background:var(--purple-g);border:1px solid var(--purple2);border-radius:var(--rs);padding:0.75rem 0.95rem;margin-bottom:1rem;}
+.rd-ttl{font-size:0.7rem;font-weight:700;color:var(--purple);letter-spacing:0.6px;margin-bottom:0.28rem;}
+.rd-txt{font-size:0.79rem;color:var(--tb);line-height:1.65;}
+.cond-expl{font-size:0.85rem;line-height:1.75;color:var(--tb);padding:0.85rem 0.95rem;background:var(--bg3);border-radius:var(--rs);margin-bottom:1rem;}
+.c4g{display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;}
+@media(max-width:540px){.c4g{grid-template-columns:1fr;}}
+.cs{border-radius:var(--rs);padding:0.8rem;}
+.cs-s{background:var(--red-g);   border:1px solid var(--red2);}
+.cs-r{background:var(--gold-g);  border:1px solid var(--gold2);}
+.cs-t{background:var(--teal-g);  border:1px solid var(--teal3);}
+.cs-l{background:var(--sky-g);   border:1px solid var(--sky2);}
+.cs-ttl{font-size:0.74rem;font-weight:700;margin-bottom:0.4rem;}
+.cs-s .cs-ttl{color:var(--red);}
+.cs-r .cs-ttl{color:var(--gold);}
+.cs-t .cs-ttl{color:var(--teal);}
+.cs-l .cs-ttl{color:var(--sky);}
+.cs-list{list-style:none;display:flex;flex-direction:column;gap:0.2rem;}
+.cs-list li{font-size:0.77rem;line-height:1.5;color:var(--tb);}
+
+/* Results */
+.results-wrap{margin-top:1.8rem;}
+.rt-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;flex-wrap:wrap;gap:0.5rem;}
+.rt-bar h2{font-family:var(--fd);font-size:1.6rem;color:var(--th);font-weight:800;}
+.btn-reset{
+  padding:0.4rem 0.9rem;border:1px solid var(--border2);background:var(--bg2);
+  border-radius:var(--rs);color:var(--tb);font-family:var(--fb);font-size:0.8rem;cursor:pointer;transition:all 0.18s;
+}
+.btn-reset:hover{border-color:var(--teal);color:var(--teal);}
+.sum-banner{
+  border-radius:var(--r);padding:1.2rem 1.4rem;margin-bottom:1.4rem;
+  display:flex;gap:1.1rem;align-items:flex-start;flex-wrap:wrap;animation:revealUp 0.3s ease;
+}
+.sum-banner.success{background:var(--teal-g); border:1px solid var(--teal3);}
+.sum-banner.warning{background:var(--gold-g); border:1px solid var(--gold2);}
+.sum-banner.danger {background:var(--red-g);  border:1px solid var(--red2);}
+.sb-ic{font-size:1.9rem;flex-shrink:0;}
+.sb-tt{font-family:var(--fd);font-size:1.05rem;color:var(--th);margin-bottom:0.25rem;}
+.sb-ds{font-size:0.84rem;color:var(--tb);line-height:1.65;}
+.sb-sts{display:flex;gap:0.6rem;margin-top:0.6rem;flex-wrap:wrap;}
+.sb-st{padding:0.2rem 0.65rem;border-radius:999px;font-size:0.73rem;font-weight:600;}
+.sb-st.danger {background:var(--red-g);  color:#ff9090; border:1px solid var(--red2);}
+.sb-st.warning{background:var(--gold-g); color:#ffd880; border:1px solid var(--gold2);}
+.sb-st.success{background:var(--teal-g); color:var(--teal); border:1px solid var(--teal3);}
+.cond-alert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:0.8rem;margin-bottom:1.4rem;}
+.cond-alert{border-radius:var(--rs);padding:0.95rem 1rem;border:1px solid;animation:revealUp 0.4s ease both;}
+.cond-alert.danger {background:var(--red-g);  border-color:var(--red2);}
+.cond-alert.warning{background:var(--gold-g); border-color:var(--gold2);}
+.ca-h{display:flex;align-items:center;gap:0.38rem;margin-bottom:0.4rem;}
+.ca-nm{font-weight:700;font-size:0.87rem;color:var(--th);flex:1;}
+.ca-sv{font-size:0.63rem;font-weight:700;padding:0.12em 0.48em;border-radius:999px;}
+.cond-alert.danger  .ca-sv{background:var(--red2); color:#ffbbbb;}
+.cond-alert.warning .ca-sv{background:var(--gold2);color:#ffdda0;}
+.ca-sm{font-size:0.78rem;color:var(--tb);line-height:1.5;margin-bottom:0.38rem;}
+.ca-ac{font-size:0.73rem;color:var(--tm);font-style:italic;border-top:1px solid rgba(255,255,255,0.05);padding-top:0.32rem;}
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;margin-bottom:1.4rem;}
+.chart-card h3{font-family:var(--fd);font-size:1.05rem;color:var(--th);margin-bottom:0.15rem;}
+.chart-card p{font-size:0.76rem;color:var(--tm);margin-bottom:0.9rem;}
+.chart-scroll{overflow-x:auto;}
+.chart-container{min-width:460px;height:260px;}
+.sec-heading{font-family:var(--fd);font-size:1.15rem;color:var(--th);margin-bottom:0.9rem;font-weight:700;}
+.param-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:1rem;}
+@media(max-width:460px){.param-grid{grid-template-columns:1fr;}}
+.param-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);animation:revealUp 0.45s ease both;}
+.pc-h{display:flex;align-items:center;gap:0.75rem;padding:0.95rem 1.1rem;border-bottom:1px solid var(--border);}
+.pc-h.success{background:var(--teal-g);}
+.pc-h.warning{background:var(--gold-g);}
+.pc-h.danger {background:var(--red-g);}
+.pc-ic{font-size:1.4rem;flex-shrink:0;}
+.pc-inf{flex:1;min-width:0;}
+.pc-nm{font-weight:700;font-size:0.88rem;color:var(--th);}
+.pc-bg{display:inline-block;padding:0.1em 0.5em;border-radius:999px;font-size:0.67rem;font-weight:700;margin-top:0.18rem;}
+.pb-s{background:rgba(0,229,192,0.18);color:var(--teal);}
+.pb-w{background:var(--gold-g);color:#ffd880;}
+.pb-d{background:var(--red-g);color:#ff9090;}
+.pc-vl{text-align:right;flex-shrink:0;}
+.pc-n{font-family:var(--fd);font-size:1.7rem;line-height:1;font-weight:800;}
+.pc-n.success{color:var(--teal);}
+.pc-n.warning{color:var(--gold);}
+.pc-n.danger {color:var(--red);}
+.pc-u{font-size:0.67rem;color:var(--tm);}
+.pc-bd{padding:0.95rem 1.1rem;}
+.pc-ex{font-size:0.84rem;line-height:1.72;color:var(--tb);padding:0.75rem 0.9rem;background:var(--bg3);border-radius:var(--rs);border-left:3px solid var(--border2);margin-bottom:0.9rem;}
+.pc-ex.success{border-left-color:var(--teal);}
+.pc-ex.warning{border-left-color:var(--gold);}
+.pc-ex.danger {border-left-color:var(--red);}
+.mini-b{margin-bottom:0.9rem;}
+.mini-bl{display:flex;justify-content:space-between;font-size:0.67rem;color:var(--tm);margin-bottom:0.22rem;}
+.mini-bg{height:8px;background:var(--bg3);border-radius:999px;overflow:hidden;}
+.mini-bf{height:100%;border-radius:999px;transition:width 1.2s cubic-bezier(0.22,1,0.36,1);}
+.mini-bf.success{background:linear-gradient(90deg,var(--teal3),var(--teal));}
+.mini-bf.warning{background:linear-gradient(90deg,var(--gold2),var(--gold));}
+.mini-bf.danger {background:linear-gradient(90deg,var(--red2),var(--red));}
+.adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
+@media(max-width:430px){.adv-grid{grid-template-columns:1fr;}}
+.adv-box{border-radius:var(--rs);padding:0.75rem;}
+.adv-eat  {background:var(--teal-g); border:1px solid var(--teal3);}
+.adv-avd  {background:var(--red-g);  border:1px solid var(--red2);}
+.adv-ttl  {font-size:0.74rem;font-weight:700;margin-bottom:0.4rem;}
+.adv-eat  .adv-ttl{color:var(--teal);}
+.adv-avd  .adv-ttl{color:var(--red);}
+.adv-list {list-style:none;display:flex;flex-direction:column;gap:0.2rem;}
+.adv-list li{font-size:0.75rem;line-height:1.5;color:var(--tb);}
+
+/* Loading */
+.loading-scr{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;text-align:center;color:var(--tm);}
+.l-rings{position:relative;width:72px;height:72px;margin:0 auto 1.3rem;display:flex;align-items:center;justify-content:center;}
+.lr{position:absolute;border:2px solid var(--teal);border-radius:50%;opacity:0;animation:lrO 2s ease-out infinite;}
+.lr1{width:36px;height:36px;} .lr2{width:54px;height:54px;animation-delay:0.5s;} .lr3{width:72px;height:72px;animation-delay:1s;}
+@keyframes lrO{0%{transform:scale(0.5);opacity:0.8}100%{transform:scale(1.4);opacity:0}}
+.lr-ic{font-size:1.7rem;z-index:2;}
+
+/* Footer */
+footer{position:relative;z-index:10;text-align:center;padding:2rem 1rem;border-top:1px solid var(--border);color:var(--tm);font-size:0.77rem;margin-top:2rem;}
+footer strong{color:var(--gold);}
+
+.hidden{display:none!important;}
+
+@media(max-width:768px){
+  .nav-links{
+    display:none;flex-direction:column;
+    position:absolute;top:58px;left:0;right:0;
+    background:rgba(5,12,21,0.98);border-bottom:1px solid var(--border);
+    padding:0.8rem;gap:0.2rem;backdrop-filter:blur(20px);
+  }
+  .nav-links.open{display:flex;}
+  .nav-cta{display:none;}
+  .nav-toggle{display:block;}
+  .stats-strip{grid-template-columns:repeat(2,1fr);}
+  .features-grid{grid-template-columns:1fr;}
+  .how-grid{grid-template-columns:1fr 1fr;}
+  .adder-row{grid-template-columns:1fr;}
+}
+
+/* ══════════════════════════════════════════════════════════
+   COMPREHENSIVE RESPONSIVE — all breakpoints
+   1280+ : desktop (base styles)
+   1024   : small laptop
+   768    : tablet landscape
+   600    : tablet portrait / large phone
+   480    : phone
+   375    : small phone (iPhone SE)
+   320    : tiny phone
+   ══════════════════════════════════════════════════════════ */
+
+/* 1024px — small laptop */
+@media (max-width:1024px){
+  .hero-title { font-size: clamp(2rem, 4.5vw, 3.8rem); }
+  .param-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: repeat(2,1fr); }
+}
+
+/* 768px — tablet */
+@media (max-width:768px){
+  /* Navbar */
+  .nav-links {
+    display:none; flex-direction:column;
+    position:fixed; top:58px; left:0; right:0;
+    background:rgba(5,12,21,0.98); border-bottom:1px solid var(--border);
+    padding:0.8rem; gap:0.2rem; backdrop-filter:blur(20px);
+    z-index:999; max-height: calc(100vh - 58px); overflow-y:auto;
+  }
+  .nav-links.open { display:flex; }
+  .nav-link { padding: 0.7rem 1rem; font-size: 0.92rem; }
+  .nav-cta { display:none; }
+  .nav-toggle { display:block; }
+
+  /* Hero */
+  .hero-section { height: 90vh; min-height: 500px; }
+  .hero-title { font-size: clamp(1.9rem, 5.5vw, 3rem); letter-spacing: -0.5px; }
+  .hero-sub { font-size: 0.95rem; max-width: 90%; }
+  .hero-btns { gap: 0.6rem; }
+  .hb-primary, .hb-outline { padding: 0.7rem 1.3rem; font-size: 0.88rem; }
+  .hero-eyebrow { font-size: 0.7rem; }
+
+  /* Stats */
+  .stats-strip { grid-template-columns: repeat(2,1fr); }
+  .ss-item { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .ss-item:nth-child(2n) { border-right: none; }
+  .ss-item:nth-last-child(-n+2) { border-bottom: none; }
+  .ss-num { font-size: 1.6rem; }
+
+  /* Features */
+  .features-grid { grid-template-columns: 1fr; }
+  .home-section { padding: 3.5rem 0; }
+  .section-title { font-size: 1.6rem; }
+  .how-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .how-num::after { display:none; }
+
+  /* CTA */
+  .cta-band { padding: 2.2rem 1.5rem; }
+  .cta-title { font-size: 1.6rem; }
+
+  /* Inner pages */
+  .container { padding: 1.8rem 1rem 4rem; }
+  .page-hero { padding: 2rem 0 1.5rem; }
+  .page-hero h1 { font-size: 1.7rem; }
+
+  /* Cards */
+  .card { padding: 1.3rem; }
+  .adder-row { grid-template-columns: 1fr; }
+  .btn-add { width: 100%; }
+
+  /* Conditions */
+  .c4g { grid-template-columns: 1fr; }
+  .param-grid { grid-template-columns: 1fr; }
+  .cond-alert-grid { grid-template-columns: 1fr; }
+
+  /* Condition browser */
+  .browser-head { padding: 1.5rem 0 1.3rem; gap: 1rem; }
+  .bh-title { font-size: 1.4rem; }
+  .bh-icon { width: 52px; height: 52px; font-size: 1.6rem; }
+}
+
+/* 600px — large phone */
+@media (max-width:600px){
+  /* Hero */
+  .hero-section { height: 95vh; }
+  .hero-title { font-size: clamp(1.75rem, 6vw, 2.5rem); }
+  .hero-sub { font-size: 0.9rem; }
+  .hero-btns { flex-direction: column; align-items: center; }
+  .hb-primary, .hb-outline { width: 100%; max-width: 300px; justify-content: center; }
+  .hero-cross { font-size: 4rem; right: 4%; }
+
+  /* Stats */
+  .ss-num { font-size: 1.5rem; }
+  .ss-lbl { font-size: 0.7rem; }
+
+  /* Features */
+  .feat-card { padding: 1.5rem 1.3rem; }
+  .feat-icon-wrap { width: 42px; height: 42px; font-size: 1.3rem; }
+  .feat-title { font-size: 0.95rem; }
+  .feat-desc { font-size: 0.8rem; }
+
+  /* How it works */
+  .how-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+  .how-step { display: grid; grid-template-columns: 52px 1fr; column-gap: 1rem; text-align: left; }
+  .how-num { margin: 0; }
+  .how-title { font-size: 0.92rem; }
+  .how-desc { font-size: 0.78rem; }
+
+  /* Page hero */
+  .ph-icon { width: 46px; height: 46px; font-size: 1.4rem; }
+  .page-hero h1 { font-size: 1.5rem; }
+  .page-hero p { font-size: 0.85rem; }
+
+  /* Drop zone */
+  .drop-zone { min-height: 180px; padding: 1.8rem 1rem; }
+  .dz-pulse { width: 60px; height: 60px; }
+  .dz-icon { font-size: 2rem; }
+  .dz-title { font-size: 1rem; }
+
+  /* Chips */
+  .chip { font-size: 0.76rem; }
+
+  /* Result cards */
+  .pc-h { padding: 0.85rem 1rem; gap: 0.65rem; }
+  .pc-n { font-size: 1.5rem; }
+  .pc-bd { padding: 0.85rem 1rem; }
+  .adv-grid { grid-template-columns: 1fr; }
+
+  /* Condition cards */
+  .cond-head { padding: 0.9rem 1rem; gap: 0.75rem; }
+  .cond-nm { font-size: 0.92rem; }
+  .cond-body { padding: 1rem; }
+  .ecg-txt { font-size: 0.76rem; }
+
+  /* Browser header */
+  .bh-icon { display: none; }
+  .bh-title { font-size: 1.3rem; }
+  .bh-sub { font-size: 0.82rem; }
+}
+
+/* 480px — standard phone */
+@media (max-width:480px){
+  /* Navbar brand */
+  .nav-brand-name { font-size: 1rem; }
+  .nav-logo { width: 30px; height: 30px; font-size: 0.9rem; border-radius: 8px; }
+
+  /* Hero */
+  .hero-section { height: 100svh; }
+  .hero-title { font-size: clamp(1.6rem, 7vw, 2.2rem); }
+  .hero-eyebrow { font-size: 0.67rem; padding: 0.28rem 0.8rem; }
+  .hero-content { padding: 0 1rem; }
+  .hero-cross { display: none; }
+
+  /* Stats */
+  .stats-strip { grid-template-columns: repeat(2,1fr); }
+
+  /* Sections */
+  .section-title { font-size: 1.45rem; }
+  .section-sub { font-size: 0.87rem; }
+  .home-section { padding: 2.8rem 0; }
+  .cta-title { font-size: 1.4rem; }
+  .cta-sub { font-size: 0.87rem; }
+  .cta-btns { flex-direction: column; align-items: center; }
+  .cta-btns .hb-primary { width: 100%; max-width: 280px; justify-content: center; }
+
+  /* Cards inner */
+  .card { padding: 1.1rem; }
+  .chart-container { min-width: 380px; height: 220px; }
+
+  /* Condition cards */
+  .cond-alert-grid { grid-template-columns: 1fr; }
+  .ca-nm { font-size: 0.83rem; }
+  .c4g { grid-template-columns: 1fr; gap: 0.7rem; }
+
+  /* Results */
+  .rt-bar h2 { font-size: 1.4rem; }
+  .sum-banner { padding: 1rem 1.1rem; gap: 0.8rem; }
+  .sb-tt { font-size: 0.95rem; }
+  .sb-ds { font-size: 0.8rem; }
+}
+
+/* 375px — iPhone SE / small Android */
+@media (max-width:375px){
+  /* Nav */
+  #navbar { padding: 0 1rem; }
+  .nav-brand { margin-right: 0.5rem; }
+  .nav-brand-name { font-size: 0.95rem; }
+
+  /* Hero */
+  .hero-title { font-size: 1.55rem; letter-spacing: -0.3px; }
+  .hero-sub { font-size: 0.86rem; }
+  .hb-primary, .hb-outline { font-size: 0.84rem; padding: 0.65rem 1.1rem; }
+
+  /* Stats */
+  .ss-num { font-size: 1.4rem; }
+  .ss-lbl { font-size: 0.66rem; }
+
+  /* Container */
+  .container { padding: 1.4rem 0.8rem 3.5rem; }
+  .card { padding: 0.95rem; }
+  .page-hero h1 { font-size: 1.35rem; }
+
+  /* Result param card */
+  .pc-n { font-size: 1.35rem; }
+  .pc-ex { font-size: 0.8rem; padding: 0.65rem 0.8rem; }
+  .adv-list li { font-size: 0.72rem; }
+
+  /* Condition cards */
+  .cond-nm { font-size: 0.88rem; }
+  .ecg-txt { font-size: 0.73rem; }
+  .cs-list li { font-size: 0.73rem; }
+}
+
+/* 320px — smallest supported (Galaxy Fold outer, etc.) */
+@media (max-width:320px){
+  .hero-title { font-size: 1.4rem; }
+  .nav-brand-name { font-size: 0.88rem; }
+  .nav-logo { width: 28px; height: 28px; font-size: 0.85rem; }
+  .ss-num { font-size: 1.3rem; }
+  .stats-strip { grid-template-columns: 1fr 1fr; }
+  .container { padding: 1.2rem 0.7rem 3rem; }
+  .feat-card { padding: 1.2rem 1rem; }
+}
+
+/* Safe area for notched phones (iPhone X+) */
+@supports (padding: max(0px)){
+  body { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+  #navbar { padding-left: max(1.5rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); }
+  .nav-links { padding-left: max(0.8rem, env(safe-area-inset-left)); padding-right: max(0.8rem, env(safe-area-inset-right)); }
+  footer { padding-bottom: max(2rem, env(safe-area-inset-bottom)); }
+}
+
+/* Touch / hover improvements */
+@media (hover:none) and (pointer:coarse){
+  .feat-card:hover { transform: none; }
+  .hb-primary:hover, .btn-analyze:hover, .nav-cta:hover { transform: none; }
+  .drop-zone:hover { transform: none; }
+  /* Bigger tap targets */
+  .nav-link { padding: 0.7rem 0.9rem; }
+  .btn-add, .btn-analyze, .btn-analyze-f, .nav-cta { min-height: 44px; }
+  .btn-rm, .chip-x { min-width: 36px; min-height: 36px; }
+}
+
+/* Landscape phone */
+@media (max-width:768px) and (orientation:landscape){
+  .hero-section { height: 100vw; min-height: 340px; max-height: 600px; }
+  .hero-title { font-size: clamp(1.4rem, 3.5vw, 2rem); }
+  .hero-sub { display: none; }
+  .hero-scroll-hint { display: none; }
+  .hero-content { padding-top: 1rem; }
+}
+
+/* Print styles (for when users print their reports) */
+@media print {
+  #navbar, .hero-section, .stats-strip, .home-section, .cta-band, footer { display: none !important; }
+  .page { display: block !important; padding-top: 0 !important; }
+  .page:not(#page-manual):not(#page-upload) { display: none !important; }
+  body { background: white; color: black; }
+  .card, .param-card { border: 1px solid #ccc; box-shadow: none; background: white; }
+  .pc-h.success, .pc-h.warning, .pc-h.danger { background: #f5f5f5; }
+  .adv-eat, .adv-avd { border: 1px solid #ccc; background: #fafafa; }
+  .pc-n.success, .pc-n.warning, .pc-n.danger { color: black; }
+  .advice-title, .adv-ttl, .cs-ttl { color: black; }
+  .adv-list li, .cs-list li { color: #333; }
+}
+</style>
 </head>
 <body>
-<div class="bg-mesh"></div>
 
-<!-- HEADER -->
-<header class="site-header">
-  <div class="header-inner">
-    <div class="logo">
-      <div class="logo-badge">🩺</div>
-      <div>
-        <div class="logo-title">Health Simplifier <span class="badge-ai">AI</span></div>
-        <div class="logo-sub">Blood · Heart · Brain — Complete Health Report Analyzer</div>
+<!-- ═══════════════════════════════════════════════════
+     COMPACT NAVBAR
+     ═══════════════════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="nav-brand" onclick="goPage('home')">
+    <div class="nav-logo">🩺</div>
+    <span class="nav-brand-name">Health Simplifier <span class="nav-ai">AI</span></span>
+  </div>
+
+  <div class="nav-links" id="navLinks">
+    <button class="nav-link active" data-page="home"   onclick="goPage('home')"><span class="ni">🏠</span>Home</button>
+    <button class="nav-link"        data-page="manual" onclick="goPage('manual')"><span class="ni">✏️</span>Manual Entry</button>
+    <button class="nav-link"        data-page="upload" onclick="goPage('upload')"><span class="ni">📄</span>Upload Report</button>
+    <button class="nav-link"        data-page="heart"  onclick="goPage('heart')"><span class="ni">🫀</span>Heart</button>
+    <button class="nav-link"        data-page="brain"  onclick="goPage('brain')"><span class="ni">🧠</span>Brain</button>
+  </div>
+
+  <div class="nav-right">
+    <button class="nav-cta" onclick="goPage('manual')">🔬 Analyze Now</button>
+    <button class="nav-toggle" id="navToggle" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: HOME
+     ═══════════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- Hero Video -->
+  <section class="hero-section">
+    <div class="hero-video-wrap">
+      <video autoplay muted loop playsinline webkit-playsinline preload="metadata" id="heroVideo" disablePictureInPicture>
+        <source src="hero-video.mp4" type="video/mp4"/>
+      </video>
+    </div>
+    <div class="hero-scanlines"></div>
+    <div class="hero-deco">
+      <div class="hero-cross">✚</div>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow"><div class="eyebrow-dot"></div>AI-Powered Medical Analysis</div>
+      <h1 class="hero-title">
+        Understand Your<br/>
+        <span class="ht-line2">Health Reports Instantly</span>
+      </h1>
+      <p class="hero-sub">Analyze 17 blood parameters, heart ECG findings &amp; brain conditions — explained in plain, simple language anyone can understand.</p>
+      <div class="hero-btns">
+        <button class="hb-primary" onclick="goPage('manual')">✏️ Enter Values</button>
+        <button class="hb-primary" onclick="goPage('upload')" style="background:linear-gradient(135deg,var(--sky),var(--sky2));box-shadow:0 0 28px rgba(76,201,240,0.4)">📄 Upload Report</button>
+        <button class="hb-outline" onclick="goPage('heart')">🫀 Heart &amp; Brain</button>
+      </div>
+    </div>
+
+    <div class="hero-scroll-hint">
+      <div class="scroll-arrow"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- Stats Strip -->
+  <div class="stats-strip reveal">
+    <div class="ss-item"><div class="ss-num" id="cnt1">0</div><div class="ss-lbl">Blood Parameters</div></div>
+    <div class="ss-item"><div class="ss-num" id="cnt2">0</div><div class="ss-lbl">Heart Conditions</div></div>
+    <div class="ss-item"><div class="ss-num" id="cnt3">0</div><div class="ss-lbl">Brain Conditions</div></div>
+    <div class="ss-item"><div class="ss-num">100%</div><div class="ss-lbl">Plain Language</div></div>
+  </div>
+
+  <!-- Features Section -->
+  <div style="background:var(--bg2);border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="home-section">
+      <div class="reveal">
+        <div class="section-label">⚡ What We Analyze</div>
+        <div class="section-title">Three Powerful<br/>Analysis Modes</div>
+        <p class="section-sub">From a single blood parameter to full ECG interpretation — get answers in seconds.</p>
+      </div>
+
+      <div class="features-grid reveal reveal-delay-2">
+        <div class="feat-card" style="--card-c:var(--teal)" onclick="goPage('manual')">
+          <div class="feat-icon-wrap" style="background:var(--teal-g);border:1px solid var(--teal3)">✏️</div>
+          <div class="feat-title">Manual Entry</div>
+          <div class="feat-desc">Pick any blood test from a dropdown, type the value, and get an instant detailed breakdown with food advice and visual charts.</div>
+          <div class="feat-arrow" style="color:var(--teal)">Start analysis →</div>
+        </div>
+        <div class="feat-card" style="--card-c:var(--sky)" onclick="goPage('upload')">
+          <div class="feat-icon-wrap" style="background:var(--sky-g);border:1px solid var(--sky2)">📄</div>
+          <div class="feat-title">Upload Report</div>
+          <div class="feat-desc">Drag & drop your lab report image or PDF. Our OCR engine reads it and extracts all values automatically for analysis.</div>
+          <div class="feat-arrow" style="color:var(--sky)">Upload now →</div>
+        </div>
+        <div class="feat-card" style="--card-c:var(--red)" onclick="goPage('heart')">
+          <div class="feat-icon-wrap" style="background:var(--red-g);border:1px solid var(--red2)">🫀</div>
+          <div class="feat-title">Heart Conditions</div>
+          <div class="feat-desc">Browse 10 cardiac conditions — AFib, heart attack, heart failure, angina — with real ECG findings, symptoms & treatment plans.</div>
+          <div class="feat-arrow" style="color:var(--red)">Explore heart →</div>
+        </div>
+        <div class="feat-card" style="--card-c:var(--purple)" onclick="goPage('brain')">
+          <div class="feat-icon-wrap" style="background:var(--purple-g);border:1px solid var(--purple2)">🧠</div>
+          <div class="feat-title">Brain Conditions</div>
+          <div class="feat-desc">Explore 9 neurological conditions — stroke, epilepsy, Alzheimer's — with MRI/EEG findings and clear lifestyle guidance.</div>
+          <div class="feat-arrow" style="color:var(--purple)">Explore brain →</div>
+        </div>
       </div>
     </div>
   </div>
-</header>
+  </div>
 
-<main class="container" id="app">
-
-  <!-- ══ INPUT SECTION ══ -->
-  <section class="card input-card" id="inputSection">
-    <div class="section-head">
-      <h2>🔬 Analyze Your Health Report</h2>
-      <p>Choose one of three analysis modes below. Enter blood values, upload a lab report, or analyze a heart/brain scan.</p>
-    </div>
-
-    <!-- 3-TAB BAR -->
-    <div class="tab-bar">
-      <button class="tab active" id="tabManual"  onclick="switchTab('manual')">✏️ Manual Entry</button>
-      <button class="tab"         id="tabUpload"  onclick="switchTab('upload')">📄 Upload Report</button>
-      <!-- <button class="tab"         id="tabHB"      onclick="switchTab('hb')">🫀🧠 Heart &amp; Brain</button> -->
-    </div>
-
-    <!-- ══ TAB 1: MANUAL ENTRY (Dropdown + Value) ══ -->
-    <div id="panelManual" class="tab-panel" style="display:block">
-      <div class="manual-intro">
-        <p>Select a blood parameter from the dropdown, enter its value, and click <strong>Add</strong>. You can add multiple parameters before analyzing.</p>
+  <!-- How It Works -->
+  <div class="container">
+    <div class="home-section">
+      <div class="reveal">
+        <div class="section-label">🔬 How It Works</div>
+        <div class="section-title">Simple. Fast. Clear.</div>
+        <p class="section-sub">Three steps to understand your health report completely.</p>
       </div>
+      <div class="how-grid">
+        <div class="how-step reveal reveal-delay-1">
+          <div class="how-num">1</div>
+          <div class="how-title">Enter or Upload</div>
+          <div class="how-desc">Type values manually or upload your lab report. Our OCR reads images and PDFs automatically.</div>
+        </div>
+        <div class="how-step reveal reveal-delay-2">
+          <div class="how-num">2</div>
+          <div class="how-title">AI Analyzes</div>
+          <div class="how-desc">Our system checks every value against clinical reference ranges and detects health conditions.</div>
+        </div>
+        <div class="how-step reveal reveal-delay-3">
+          <div class="how-num">3</div>
+          <div class="how-title">Get Insights</div>
+          <div class="how-desc">Receive plain-language explanations, visual charts, food advice, and condition summaries.</div>
+        </div>
+        <div class="how-step reveal reveal-delay-4">
+          <div class="how-num">4</div>
+          <div class="how-title">Take Action</div>
+          <div class="how-desc">Know exactly what to eat, what to avoid, and when to see a doctor — all in simple words.</div>
+        </div>
+      </div>
+    </div>
 
-      <div class="manual-add-row">
-        <div class="select-wrap">
-          <select id="paramSelect">
-            <option value="">— Select Parameter —</option>
+    <!-- CTA Band -->
+    <div class="cta-band reveal">
+      <div class="cta-title">Ready to understand your report?</div>
+      <div class="cta-sub">Enter your blood values or upload a report to get a complete health analysis in under 60 seconds.</div>
+      <div class="cta-btns">
+        <button class="hb-primary" onclick="goPage('manual')">✏️ Manual Entry</button>
+        <button class="hb-primary" onclick="goPage('upload')" style="background:linear-gradient(135deg,var(--sky),var(--sky2));box-shadow:0 0 24px rgba(76,201,240,0.35)">📄 Upload Report</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: MANUAL ENTRY
+     ═══════════════════════════════════════════════════ -->
+<div class="page" id="page-manual">
+  <div class="container">
+    <div class="page-hero">
+      <div class="ph-icon" style="background:var(--teal-g);border:1px solid var(--teal3)">✏️</div>
+      <h1>Manual Entry</h1>
+      <p>Select any blood parameter, enter its value, and build your list. Analyze all at once for a complete report.</p>
+    </div>
+
+    <div class="card">
+      <div class="adder-row">
+        <div>
+          <div class="field-label">Blood Parameter</div>
+          <select class="inp" id="paramSelect">
+            <option value="">— Choose a parameter —</option>
             <optgroup label="🩸 Blood Count">
               <option value="hemoglobin">Hemoglobin (Hb) — g/dL</option>
               <option value="rbc">RBC Count — million/µL</option>
               <option value="wbc">WBC Count — cells/µL</option>
               <option value="platelets">Platelets (PLT) — cells/µL</option>
             </optgroup>
-            <optgroup label="🍬 Glucose & Lipids">
+            <optgroup label="🍬 Glucose &amp; Lipids">
               <option value="glucose">Blood Glucose (Fasting) — mg/dL</option>
               <option value="cholesterol">Total Cholesterol — mg/dL</option>
               <option value="ldl">LDL Cholesterol — mg/dL</option>
               <option value="hdl">HDL Cholesterol — mg/dL</option>
               <option value="triglycerides">Triglycerides — mg/dL</option>
             </optgroup>
-            <optgroup label="🫘 Kidney Function">
+            <optgroup label="🫘 Kidney">
               <option value="bun">Blood Urea Nitrogen (BUN) — mg/dL</option>
               <option value="creatinine">Creatinine — mg/dL</option>
               <option value="uricAcid">Uric Acid — mg/dL</option>
@@ -76,651 +1199,630 @@
               <option value="potassium">Potassium (K⁺) — mEq/L</option>
               <option value="calcium">Calcium (Ca²⁺) — mg/dL</option>
             </optgroup>
-            <optgroup label="🌿 Vitamins & Hormones">
+            <optgroup label="🌿 Vitamins &amp; Hormones">
               <option value="vitaminD">Vitamin D — ng/mL</option>
               <option value="tsh">TSH (Thyroid) — mIU/L</option>
             </optgroup>
           </select>
+          <div class="field-hint" id="refHint">Select a parameter to see its reference range</div>
         </div>
-        <div class="value-wrap">
-          <input type="number" id="paramValue" placeholder="Enter value…" step="any" onkeydown="if(event.key==='Enter')addParam()"/>
-          <span class="ref-hint" id="refHint">Select a parameter to see reference range</span>
+        <div>
+          <div class="field-label">Value</div>
+          <input type="number" class="inp" id="paramValue" placeholder="e.g. 13.2" step="any" onkeydown="if(event.key==='Enter')addParam()"/>
         </div>
         <button class="btn-add" onclick="addParam()">＋ Add</button>
       </div>
+      <div id="fieldErr" class="field-err hidden"></div>
 
-      <!-- Added parameters list -->
-      <div id="addedParams" class="added-params hidden">
-        <div class="added-head">
-          <span>📋 Parameters Added</span>
-          <button class="btn-clear-all" onclick="clearAllParams()">Clear All</button>
+      <div id="chipsSection" class="chips-wrap hidden" style="margin-top:1rem">
+        <div class="chips-head">
+          <span id="chipsCount">0 parameters</span>
+          <button class="btn-clr" onclick="clearParams()">Clear All</button>
         </div>
-        <div id="paramChips" class="param-chips"></div>
+        <div class="chips-row" id="chipsRow"></div>
       </div>
 
-      <div id="manualError" class="field-error hidden"></div>
+      <button class="btn-analyze" onclick="runAnalysis('manual')">🔬 Analyze Report</button>
     </div>
 
-    <!-- ══ TAB 2: UPLOAD REPORT ══ -->
-    <div id="panelUpload" class="tab-panel" style="display:none">
-      <div class="upload-zone" id="uploadZone"
-           onclick="document.getElementById('fileInput').click()"
-           ondragover="handleDragOver(event)" ondrop="handleDrop(event)">
-        <div class="upload-icon">📁</div>
-        <p class="upload-title">Drop your blood report here</p>
-        <p class="upload-sub">Supports JPG, PNG, PDF • Click or drag &amp; drop</p>
-        <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none" onchange="handleFileUpload(event)"/>
-      </div>
-      <div id="ocrProgress" class="ocr-progress hidden">
-        <div class="ocr-spinner"></div>
-        <div class="ocr-text-wrap">
-          <p id="ocrStatus">Initializing OCR…</p>
-          <div class="progress-bg"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
-        </div>
-      </div>
-      <div id="ocrPreview" class="ocr-preview hidden">
-        <div class="preview-head">📝 Extracted Text <span class="preview-note">(raw scan)</span></div>
-        <pre id="ocrRawText"></pre>
-      </div>
-      <div id="extractedValues" class="extracted-box hidden">
-        <div class="extracted-head">✅ Values Detected</div>
-        <div id="extractedGrid" class="extracted-grid"></div>
-        <p class="extracted-note">✏️ Values transferred to Manual Entry tab for review. Switch there to edit before analyzing.</p>
-      </div>
-    </div>
-
-    <!-- ══ TAB 3: HEART & BRAIN ══ -->
-    <div id="panelHB" class="tab-panel" style="display:none">
-
-      <!-- Section switcher -->
-      <div class="hbs-switcher">
-        <button class="hbs-btn active" id="hbsSwitchHeart" onclick="switchHBSection('heart')">
-          <span class="hbs-btn-icon">🫀</span>
-          <div class="hbs-btn-text"><strong>Heart Tests</strong><span>9 cardiac tests & conditions</span></div>
-        </button>
-        <button class="hbs-btn" id="hbsSwitchBrain" onclick="switchHBSection('brain')">
-          <span class="hbs-btn-icon">🧠</span>
-          <div class="hbs-btn-text"><strong>Brain Tests</strong><span>7 neurological tests & conditions</span></div>
-        </button>
-      </div>
-
-      <!-- ── HEART SECTION ── -->
-      <div id="hbSectionHeart" class="hbs-section" style="display:block">
-
-        <div class="hbs-section-header heart">
-          <div class="hbs-header-icon">🫀</div>
-          <div>
-            <h3 class="hbs-header-title">Heart & Cardiac Tests</h3>
-            <p class="hbs-header-sub">Upload any cardiac report below — ECG, Echo, Angiography, CT, MRI — our AI will scan and analyze it. Or explore all 9 cardiac tests below.</p>
-          </div>
-        </div>
-
-        <!-- Heart Upload Box -->
-        <div class="hbs-upload-box heart" id="heartUploadBox">
-          <div class="hbs-drop-zone type-heart" id="heartDropZone"
-               ondragenter="secDragEnter(event,'heart')"
-               ondragover="secDragOver(event,'heart')"
-               ondragleave="secDragLeave(event,'heart')"
-               ondrop="secDrop(event,'heart')">
-            <input type="file" id="fileInputHeart" accept="image/*,.pdf" style="display:none" onchange="secFileSelect(event,'heart')"/>
-            <div class="hbs-dz-idle" id="heartDZIdle">
-              <div class="hbs-dz-pulse">
-                <div class="hbs-dz-ring"></div>
-                <div class="hbs-dz-ring hbs-delay"></div>
-                <span class="hbs-dz-icon">🫀</span>
-              </div>
-              <div class="hbs-dz-title">Drop your Heart / ECG Report here</div>
-              <div class="hbs-dz-sub">ECG · Echo · Angiography · CT · MRI · Lipid Report</div>
-              <div class="hbs-dz-divider"><span>or</span></div>
-              <button class="hbs-browse-btn heart" onclick="document.getElementById('fileInputHeart').click()">📂 Browse Files</button>
-              <div class="hbs-dz-formats">JPG · PNG · PDF supported</div>
-            </div>
-            <div class="hbs-dz-overlay hidden" id="heartDZOverlay">
-              <div class="hbs-overlay-icon">📥</div>
-              <p class="hbs-overlay-text">Release to upload</p>
-            </div>
-          </div>
-          <div class="hbs-file-card hidden type-heart" id="heartFileCard">
-            <div class="hbs-fc-icon" id="heartFCIcon">📄</div>
-            <div class="hbs-fc-info">
-              <div class="hbs-fc-name" id="heartFCName">—</div>
-              <div class="hbs-fc-size" id="heartFCSize">—</div>
-            </div>
-            <div class="hbs-fc-actions">
-              <button class="hbs-analyze-btn heart" onclick="secAnalyze('heart')">🔬 Analyze Report</button>
-              <button class="hbs-remove-btn" onclick="secRemove('heart')" title="Remove">✕</button>
-            </div>
-          </div>
-          <div id="heartOCRProgress" class="ocr-progress hidden">
-            <div class="ocr-spinner"></div>
-            <div class="ocr-text-wrap">
-              <p id="heartOCRStatus">Initializing…</p>
-              <div class="progress-bg"><div class="progress-fill" id="heartOCRBar" style="width:0%"></div></div>
-            </div>
-          </div>
-          <div id="heartOCRPreview" class="ocr-preview hidden">
-            <div class="preview-head">📝 Scanned Text <span class="preview-note">(raw)</span></div>
-            <pre id="heartOCRText"></pre>
-          </div>
-        </div>
-
-        <!-- Heart Tests Grid -->
-        <div class="hbs-tests-heading">📋 All Cardiac Tests — What They Detect</div>
-        <div class="hbs-tests-grid" id="heartTestsGrid">
-
-          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">⚡</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">ECG / EKG</div>
-                <div class="hbs-tc-full">Electrocardiogram</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Measures electrical activity of the heart. Records the rhythm, rate, and pattern of every heartbeat using electrodes placed on skin.</div>
-              <div class="hbs-tc-detects-label">Detects:</div>
-              <ul class="hbs-tc-list">
-                <li>🔴 Irregular heartbeat (arrhythmia) — AFib, VT, bradycardia</li>
-                <li>🔴 Heart attack (STEMI/NSTEMI) — ST elevation or depression</li>
-                <li>🟡 Left ventricular hypertrophy (LVH)</li>
-                <li>🟡 Bundle branch blocks (LBBB/RBBB)</li>
-                <li>🟡 QT prolongation — sudden death risk</li>
-                <li>✅ Normal sinus rhythm — healthy electrical pattern</li>
-              </ul>
-              <div class="hbs-tc-note">💡 First test done when heart disease is suspected. Takes 5 minutes, painless.</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">🔊</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">Echocardiogram</div>
-                <div class="hbs-tc-full">Echo — Ultrasound of the Heart</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Uses ultrasound waves to create real-time images of the beating heart. Shows structure, movement, and pumping function.</div>
-              <div class="hbs-tc-detects-label">Detects:</div>
-              <ul class="hbs-tc-list">
-                <li>🔴 Heart failure — low ejection fraction (EF &lt;40%)</li>
-                <li>🔴 Valve disease — stenosis (narrowing) or regurgitation (leaking)</li>
-                <li>🔴 Cardiomyopathy — enlarged or thickened heart muscle</li>
-                <li>🟡 Pericardial effusion — fluid around heart</li>
-                <li>🟡 Wall motion abnormalities after heart attack</li>
-                <li>✅ Normal EF 55–70% means good pumping function</li>
-              </ul>
-              <div class="hbs-tc-note">💡 Key number to know: Ejection Fraction (EF). Normal is 55–70%. Below 40% is heart failure.</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">🩸</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">Blood Pressure Test</div>
-                <div class="hbs-tc-full">Sphygmomanometry</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Measures the force of blood pushing against artery walls. Reported as systolic/diastolic (e.g., 120/80 mmHg).</div>
-              <div class="hbs-tc-detects-label">Ranges:</div>
-              <ul class="hbs-tc-list">
-                <li>✅ Normal: &lt;120/80 mmHg</li>
-                <li>🟡 Elevated: 120–129 / &lt;80 mmHg — lifestyle change needed</li>
-                <li>🟡 Stage 1 Hypertension: 130–139 / 80–89 mmHg</li>
-                <li>🔴 Stage 2 Hypertension: ≥140/90 mmHg — medication needed</li>
-                <li>🔴 Hypertensive Crisis: &gt;180/120 — emergency!</li>
-                <li>🟡 Low BP (Hypotension): &lt;90/60 — dizziness, fainting</li>
-              </ul>
-              <div class="hbs-tc-note">💡 High BP is the #1 cause of stroke and heart attack. Called the "silent killer" — no symptoms until damage is done.</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">🧪</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">Lipid Profile Test</div>
-                <div class="hbs-tc-full">Blood Cholesterol Test</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Blood test measuring all forms of fat (lipids) in the blood. Done fasting for 9–12 hours. Most important cardiac risk assessment test.</div>
-              <div class="hbs-tc-detects-label">Normal ranges:</div>
-              <ul class="hbs-tc-list">
-                <li>✅ Total Cholesterol: &lt;200 mg/dL (optimal)</li>
-                <li>🔴 LDL (bad): &lt;100 mg/dL optimal; &gt;160 high risk</li>
-                <li>✅ HDL (good): &gt;60 mg/dL protective; &lt;40 danger</li>
-                <li>🟡 Triglycerides: &lt;150 normal; &gt;200 high risk</li>
-                <li>🔴 High LDL + low HDL = major heart attack risk</li>
-              </ul>
-              <div class="hbs-tc-note">💡 Even a 10% reduction in LDL reduces heart attack risk by 20–25%. Statins are highly effective.</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">💉</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">Troponin Test</div>
-                <div class="hbs-tc-full">Cardiac Troponin I / T</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Blood test that detects troponin — a protein released when heart muscle cells are damaged or dying. Gold standard for heart attack diagnosis.</div>
-              <div class="hbs-tc-detects-label">Interpretation:</div>
-              <ul class="hbs-tc-list">
-                <li>✅ Normal: Troponin I &lt;0.04 ng/mL (lab-specific ranges vary)</li>
-                <li>🔴 Elevated: Confirms myocardial injury — heart attack likely</li>
-                <li>🔴 Rising trend (serial tests 3–6 hours apart) = heart attack in progress</li>
-                <li>🟡 Mildly elevated: Can also indicate myocarditis, PE, or severe infection</li>
-                <li>💡 High-sensitivity troponin (hsTnI) detects damage within 1 hour</li>
-              </ul>
-              <div class="hbs-tc-note">💡 Most important test in Emergency Room for chest pain. 99% sensitive for heart attack when tested at 0 and 3 hours.</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">🏃</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">Stress Test (TMT)</div>
-                <div class="hbs-tc-full">Treadmill / Exercise Stress Test</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">ECG recorded while patient walks on a treadmill at increasing speeds. The heart is stressed to reveal problems not visible at rest.</div>
-              <div class="hbs-tc-detects-label">Detects:</div>
-              <ul class="hbs-tc-list">
-                <li>🔴 Blocked coronary arteries — causes ST depression during exercise</li>
-                <li>🔴 Exercise-induced arrhythmias — dangerous irregular rhythm</li>
-                <li>🟡 Poor exercise tolerance — indicates reduced heart reserve</li>
-                <li>🟡 Abnormal blood pressure response during exercise</li>
-                <li>✅ Negative test = lower risk of significant coronary disease</li>
-              </ul>
-              <div class="hbs-tc-note">💡 If TMT is positive (ST depression &gt;2mm), coronary angiography is usually the next step.</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">💉</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">Coronary Angiography</div>
-                <div class="hbs-tc-full">Cardiac Catheterization</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Invasive procedure: dye injected into coronary arteries via catheter. X-ray images show exact location and severity of blockages. Gold standard for coronary artery disease.</div>
-              <div class="hbs-tc-detects-label">Detects:</div>
-              <ul class="hbs-tc-list">
-                <li>🔴 Coronary artery stenosis — percentage of blockage in each artery</li>
-                <li>🔴 Total occlusion — 100% blocked artery requiring urgent stent</li>
-                <li>🟡 Collateral circulation — natural bypass vessels</li>
-                <li>💊 During procedure: angioplasty + stent can be placed immediately</li>
-                <li>🔴 Significant stenosis &gt;70% usually requires stent or bypass surgery</li>
-              </ul>
-              <div class="hbs-tc-note">💡 Both diagnostic and potentially therapeutic — a blockage found can often be treated in the same procedure.</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">🖥️</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">Cardiac CT Scan</div>
-                <div class="hbs-tc-full">CT Coronary Angiography / Calcium Score</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Non-invasive CT imaging of the heart and coronary arteries. Can calculate Coronary Artery Calcium (CAC) score and show arterial blockages without catheter.</div>
-              <div class="hbs-tc-detects-label">Detects:</div>
-              <ul class="hbs-tc-list">
-                <li>🔴 Calcium deposits in arteries — CAC score &gt;400 = high risk</li>
-                <li>🔴 Coronary artery stenosis — non-invasive blockage detection</li>
-                <li>🟡 Plaque (soft and hard) in arterial walls</li>
-                <li>✅ CAC score = 0 means very low 10-year cardiac risk</li>
-                <li>🟡 Congenital heart anomalies and structural defects</li>
-              </ul>
-              <div class="hbs-tc-note">💡 CAC score is one of the best predictors of future heart attack risk. Score 0 is very reassuring.</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card heart" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">🧲</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">Cardiac MRI</div>
-                <div class="hbs-tc-full">Magnetic Resonance Imaging — Heart</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Advanced imaging using magnetic fields and radio waves. Provides the most detailed pictures of heart tissue, function, and blood flow without radiation.</div>
-              <div class="hbs-tc-detects-label">Detects:</div>
-              <ul class="hbs-tc-list">
-                <li>🔴 Myocardial scarring — scar tissue from old heart attacks (late gadolinium enhancement)</li>
-                <li>🔴 Myocarditis — inflammation of heart muscle</li>
-                <li>🔴 Cardiomyopathy — precise measurement of heart dimensions</li>
-                <li>🟡 Pericardial disease — pericarditis, effusion, constriction</li>
-                <li>✅ Most accurate measurement of ejection fraction (EF)</li>
-              </ul>
-              <div class="hbs-tc-note">💡 Gold standard for cardiomyopathy and myocarditis diagnosis. No radiation exposure unlike CT.</div>
-            </div>
-          </div>
-
-        </div><!-- /heartTestsGrid -->
-      </div><!-- /hbSectionHeart -->
-
-      <!-- ── BRAIN SECTION ── -->
-      <div id="hbSectionBrain" class="hbs-section" style="display:none">
-
-        <div class="hbs-section-header brain">
-          <div class="hbs-header-icon">🧠</div>
-          <div>
-            <h3 class="hbs-header-title">Brain & Neurological Tests</h3>
-            <p class="hbs-header-sub">Upload any neurology report below — MRI, CT, EEG, PET scan — our AI will scan and analyze it. Or explore all 7 brain tests below.</p>
-          </div>
-        </div>
-
-        <!-- Brain Upload Box -->
-        <div class="hbs-upload-box brain" id="brainUploadBox">
-          <div class="hbs-drop-zone type-brain" id="brainDropZone"
-               ondragenter="secDragEnter(event,'brain')"
-               ondragover="secDragOver(event,'brain')"
-               ondragleave="secDragLeave(event,'brain')"
-               ondrop="secDrop(event,'brain')">
-            <input type="file" id="fileInputBrain" accept="image/*,.pdf" style="display:none" onchange="secFileSelect(event,'brain')"/>
-            <div class="hbs-dz-idle" id="brainDZIdle">
-              <div class="hbs-dz-pulse">
-                <div class="hbs-dz-ring"></div>
-                <div class="hbs-dz-ring hbs-delay"></div>
-                <span class="hbs-dz-icon">🧠</span>
-              </div>
-              <div class="hbs-dz-title">Drop your Brain / Neurology Report here</div>
-              <div class="hbs-dz-sub">MRI · CT · EEG · PET Scan · Angiogram · LP Report</div>
-              <div class="hbs-dz-divider"><span>or</span></div>
-              <button class="hbs-browse-btn brain" onclick="document.getElementById('fileInputBrain').click()">📂 Browse Files</button>
-              <div class="hbs-dz-formats">JPG · PNG · PDF supported</div>
-            </div>
-            <div class="hbs-dz-overlay hidden" id="brainDZOverlay">
-              <div class="hbs-overlay-icon">📥</div>
-              <p class="hbs-overlay-text">Release to upload</p>
-            </div>
-          </div>
-          <div class="hbs-file-card hidden type-brain" id="brainFileCard">
-            <div class="hbs-fc-icon" id="brainFCIcon">📄</div>
-            <div class="hbs-fc-info">
-              <div class="hbs-fc-name" id="brainFCName">—</div>
-              <div class="hbs-fc-size" id="brainFCSize">—</div>
-            </div>
-            <div class="hbs-fc-actions">
-              <button class="hbs-analyze-btn brain" onclick="secAnalyze('brain')">🔬 Analyze Report</button>
-              <button class="hbs-remove-btn" onclick="secRemove('brain')" title="Remove">✕</button>
-            </div>
-          </div>
-          <div id="brainOCRProgress" class="ocr-progress hidden">
-            <div class="ocr-spinner"></div>
-            <div class="ocr-text-wrap">
-              <p id="brainOCRStatus">Initializing…</p>
-              <div class="progress-bg"><div class="progress-fill" id="brainOCRBar" style="width:0%"></div></div>
-            </div>
-          </div>
-          <div id="brainOCRPreview" class="ocr-preview hidden">
-            <div class="preview-head">📝 Scanned Text <span class="preview-note">(raw)</span></div>
-            <pre id="brainOCRText"></pre>
-          </div>
-        </div>
-
-        <!-- Brain Tests Grid -->
-        <div class="hbs-tests-heading">📋 All Neurological Tests — What They Detect</div>
-        <div class="hbs-tests-grid" id="brainTestsGrid">
-
-          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">🖥️</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">CT Scan (Brain)</div>
-                <div class="hbs-tc-full">Computed Tomography — Head</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Uses X-rays and computer processing to create cross-sectional images of the brain. Fast test (5 minutes) — first done in emergencies.</div>
-              <div class="hbs-tc-detects-label">Detects:</div>
-              <ul class="hbs-tc-list">
-                <li>🔴 Brain hemorrhage — bleeding inside skull (most sensitive CT finding)</li>
-                <li>🔴 Acute stroke — large ischemic area, hemorrhagic transformation</li>
-                <li>🔴 Brain injury — contusion, fractures, midline shift</li>
-                <li>🟡 Brain tumors — mass lesions, calcifications</li>
-                <li>🟡 Hydrocephalus — enlarged fluid spaces</li>
-                <li>✅ First test in any head injury or sudden severe headache</li>
-              </ul>
-              <div class="hbs-tc-note">💡 CT is the fastest and most accessible brain scan. MRI is more detailed but takes longer.</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">🧲</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">MRI (Brain)</div>
-                <div class="hbs-tc-full">Magnetic Resonance Imaging — Brain</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Uses magnetic fields and radio waves to create detailed images of brain tissue. Far more sensitive than CT for most brain conditions. No radiation.</div>
-              <div class="hbs-tc-detects-label">Detects:</div>
-              <ul class="hbs-tc-list">
-                <li>🔴 Brain tumors — size, location, spread, type (glioma vs meningioma)</li>
-                <li>🔴 Ischemic stroke — DWI (diffusion) detects within 30 minutes</li>
-                <li>🔴 Multiple sclerosis — white matter lesions (plaques)</li>
-                <li>🟡 Alzheimer's — hippocampal atrophy, cortical thinning</li>
-                <li>🟡 Epilepsy focus — structural cause of seizures</li>
-                <li>🟡 Aneurysm — MRA (MRI angiography) shows vascular abnormalities</li>
-              </ul>
-              <div class="hbs-tc-note">💡 Gold standard for most brain conditions. DWI sequence is critical in acute stroke — detects infarct within minutes of onset.</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">⚡</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">EEG</div>
-                <div class="hbs-tc-full">Electroencephalogram</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Records electrical activity of the brain using electrodes placed on the scalp. The "ECG for the brain." Can record during sleep for overnight monitoring.</div>
-              <div class="hbs-tc-detects-label">Detects:</div>
-              <ul class="hbs-tc-list">
-                <li>🔴 Epilepsy — interictal spikes, sharp waves, seizure discharges</li>
-                <li>🔴 Status epilepticus — continuous seizure activity</li>
-                <li>🟡 Encephalopathy — diffuse slowing from metabolic causes</li>
-                <li>🟡 Sleep disorders — sleep staging, REM behavior disorder</li>
-                <li>🟡 Brain death — electrocerebral silence (flat EEG)</li>
-                <li>✅ Normal EEG does NOT rule out epilepsy (40% of epileptics have normal EEG)</li>
-              </ul>
-              <div class="hbs-tc-note">💡 A 24–72 hour ambulatory EEG is much more sensitive than a routine 20-minute EEG for capturing seizures.</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">🔆</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">PET Scan (Brain)</div>
-                <div class="hbs-tc-full">Positron Emission Tomography</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Functional imaging — shows metabolic activity of brain regions using radioactive tracer (usually FDG-glucose). Areas with low activity appear dark.</div>
-              <div class="hbs-tc-detects-label">Detects:</div>
-              <ul class="hbs-tc-list">
-                <li>🔴 Alzheimer's disease — hypometabolism in temporal/parietal lobes</li>
-                <li>🔴 Amyloid PET — directly detects amyloid plaques (Alzheimer's hallmark)</li>
-                <li>🔴 Brain tumor activity vs radiation necrosis — key treatment decision</li>
-                <li>🟡 Parkinson's — dopamine transporter (DaT) scan shows nigral degeneration</li>
-                <li>🟡 Epilepsy focus localization before surgery</li>
-              </ul>
-              <div class="hbs-tc-note">💡 Amyloid PET (2024) can detect Alzheimer's 10–15 years before symptoms appear — enabling early intervention.</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">💉</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">Lumbar Puncture</div>
-                <div class="hbs-tc-full">Spinal Tap — CSF Analysis</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Needle inserted into lower spine to collect cerebrospinal fluid (CSF) — the fluid surrounding brain and spinal cord. Analyzed for cells, proteins, glucose, and pathogens.</div>
-              <div class="hbs-tc-detects-label">Detects:</div>
-              <ul class="hbs-tc-list">
-                <li>🔴 Bacterial meningitis — turbid CSF, high WBC, low glucose, bacteria on culture</li>
-                <li>🔴 Viral meningitis / encephalitis — lymphocytic pleocytosis</li>
-                <li>🔴 Subarachnoid hemorrhage — xanthochromia (yellow CSF)</li>
-                <li>🟡 Multiple sclerosis — oligoclonal bands in CSF</li>
-                <li>🟡 Alzheimer's — low Aβ42, high tau in CSF</li>
-              </ul>
-              <div class="hbs-tc-note">💡 Always done AFTER CT scan to rule out raised intracranial pressure (blind LP in raised ICP can cause brain herniation).</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">🩹</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">Brain Angiography</div>
-                <div class="hbs-tc-full">Cerebral / Brain Angiogram</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Uses dye injected into brain arteries to create detailed X-ray images of blood vessels. Gold standard for cerebrovascular disease. Can be invasive (DSA) or non-invasive (CTA/MRA).</div>
-              <div class="hbs-tc-detects-label">Detects:</div>
-              <ul class="hbs-tc-list">
-                <li>🔴 Intracranial aneurysm — ballooning of artery wall, rupture risk</li>
-                <li>🔴 AVM (Arteriovenous Malformation) — abnormal tangle of vessels</li>
-                <li>🔴 Carotid artery stenosis — narrowing causing stroke/TIA risk</li>
-                <li>🟡 Vasospasm after subarachnoid hemorrhage</li>
-                <li>🔴 Acute ischemic stroke — clot visible in major artery (for thrombectomy)</li>
-              </ul>
-              <div class="hbs-tc-note">💡 DSA (digital subtraction angiography) remains gold standard. Endovascular treatment (coiling, stenting) can be done in same procedure.</div>
-            </div>
-          </div>
-
-          <div class="hbs-test-card brain" onclick="toggleTestCard(this)">
-            <div class="hbs-tc-head">
-              <span class="hbs-tc-icon">👨‍⚕️</span>
-              <div class="hbs-tc-info">
-                <div class="hbs-tc-name">Neurological Examination</div>
-                <div class="hbs-tc-full">Clinical Neuro Exam</div>
-              </div>
-              <span class="hbs-tc-arrow">▼</span>
-            </div>
-            <div class="hbs-tc-body">
-              <div class="hbs-tc-what">Bedside physical examination performed by neurologist. Tests every part of the nervous system systematically. Often reveals diagnosis before any scan is needed.</div>
-              <div class="hbs-tc-detects-label">Checks:</div>
-              <ul class="hbs-tc-list">
-                <li>🧠 Mental status — MMSE/MoCA for memory and cognition</li>
-                <li>👁️ Cranial nerves — vision, eye movement, facial sensation</li>
-                <li>💪 Motor function — power, tone, coordination in all limbs</li>
-                <li>🖐️ Sensory function — pain, temperature, vibration, proprioception</li>
-                <li>🔨 Reflexes — hyperreflexia (UMN), hyporeflexia (LMN), Babinski sign</li>
-                <li>🚶 Gait and balance — romberg test, tandem walking</li>
-              </ul>
-              <div class="hbs-tc-note">💡 An experienced neurologist can localize the lesion (exactly WHERE in the nervous system) just from the clinical exam — before any scan.</div>
-            </div>
-          </div>
-
-        </div><!-- /brainTestsGrid -->
-      </div><!-- /hbSectionBrain -->
-
-      <!-- Browse conditions row -->
-      <div class="hbs-bottom-row">
-        <div class="hbs-or-div"><span>or explore conditions directly</span></div>
-        <div class="hbs-browse-row-new">
-          <button class="btn-browse-heart" onclick="hbType='heart'; browseAllConditions()">🫀 Browse All Heart Conditions</button>
-          <button class="btn-browse-brain" onclick="hbType='brain'; browseAllConditions()">🧠 Browse All Brain Conditions</button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Error -->
-    <div id="errorMsg" class="error-msg hidden"></div>
-
-    <!-- Analyze button (hidden for tab 3 — auto-triggered) -->
-    <button class="btn-analyze" id="btnAnalyze" style="display:block" onclick="runAnalysis()">
-      🔬 Analyze My Blood Report
-    </button>
-  </section>
-
-  <!-- ══ LOADING ══ -->
-  <div id="loadingSection" class="loading-wrap hidden">
-    <div class="loading-rings">
-      <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
-      <span class="ring-icon">🧬</span>
-    </div>
-    <p id="loadingText">Analyzing your report…</p>
+    <div id="manualError"   class="error-bar hidden"></div>
+    <div id="manualLoading" class="loading-scr hidden"><div class="l-rings"><div class="lr lr1"></div><div class="lr lr2"></div><div class="lr lr3"></div><span class="lr-ic">🧬</span></div><p>Analyzing…</p></div>
+    <div id="manualResults" class="results-wrap hidden"></div>
   </div>
+</div>
 
-  <!-- ══ BLOOD RESULTS ══ -->
-  <section id="resultsSection" class="hidden">
-    <div class="results-topbar">
-      <h2 class="results-title">📊 Blood Report Analysis</h2>
-      <button class="btn-reset" onclick="resetAll()">🔄 New Analysis</button>
+<!-- ═══════════════════════════════════════════════════
+     PAGE: UPLOAD REPORT
+     ═══════════════════════════════════════════════════ -->
+<div class="page" id="page-upload">
+  <div class="container">
+    <div class="page-hero">
+      <div class="ph-icon" style="background:var(--sky-g);border:1px solid var(--sky2)">📄</div>
+      <h1>Upload Report</h1>
+      <p>Drag &amp; drop your lab report or click to browse. Our OCR will extract all values automatically.</p>
     </div>
-    <div id="summaryBanner" class="summary-banner"></div>
-    <div id="conditionSection" class="condition-section hidden">
-      <h3 class="section-heading">🚨 Detected Health Conditions</h3>
-      <div id="conditionCards" class="condition-grid"></div>
-    </div>
-    <div class="card chart-card">
-      <h3 class="card-title">📈 Visual Overview</h3>
-      <p class="card-sub">Bars = your values. Dashed line = upper normal limit.</p>
-      <div class="chart-scroll">
-        <div id="chartContainer" class="chart-container"><canvas id="healthChart"></canvas></div>
+
+    <div class="card">
+      <div class="drop-zone" id="dropZone"
+           ondragenter="dzEnter(event)" ondragover="dzOver(event)"
+           ondragleave="dzLeave(event)" ondrop="dzDrop(event)">
+        <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none" onchange="fileSelected(event)"/>
+        <div class="dz-pulse"><div class="dz-ring"></div><div class="dz-ring dz-ring2"></div><span class="dz-icon">📁</span></div>
+        <div class="dz-title">Drop your blood report here</div>
+        <div class="dz-sub">Drag &amp; drop anywhere in this box</div>
+        <div class="dz-div"><span>or</span></div>
+        <button class="btn-browse" onclick="document.getElementById('fileInput').click()">📂 Browse Files</button>
+        <div class="dz-fmts">JPG · PNG · PDF supported</div>
+        <div class="dz-overlay hidden" id="dzOverlay">
+          <div class="dz-ov-icon">📥</div>
+          <div class="dz-ov-text">Release to upload</div>
+        </div>
+      </div>
+
+      <div id="fileCard" class="file-card hidden">
+        <div class="fc-icon" id="fcIcon">📄</div>
+        <div class="fc-info"><div class="fc-name" id="fcName">—</div><div class="fc-size" id="fcSize">—</div></div>
+        <div class="fc-acts">
+          <button class="btn-analyze-f" onclick="processUploadedFile()">🔬 Analyze</button>
+          <button class="btn-rm" onclick="removeFile()">✕</button>
+        </div>
+      </div>
+
+      <div id="ocrProgress" class="ocr-prog hidden">
+        <div class="ocr-spin"></div>
+        <div class="ocr-inf"><div class="ocr-st" id="ocrStatus">Initializing…</div><div class="ocr-bg"><div class="ocr-fill" id="ocrBar" style="width:0%"></div></div></div>
+      </div>
+      <div id="ocrPreviewBox" class="ocr-prev-box hidden"><div class="ocr-prev-head">📝 Extracted Text</div><pre id="ocrText"></pre></div>
+      <div id="extChipsBox" class="ext-box hidden">
+        <div class="ext-head">✅ Values Detected</div>
+        <div class="ext-row" id="extChipsRow"></div>
       </div>
     </div>
-    <h3 class="section-heading">🔬 Detailed Parameter Analysis</h3>
-    <div id="paramResults" class="param-results"></div>
-  </section>
 
-  <!-- ══ HEART & BRAIN RESULTS ══ -->
+    <div id="uploadError"   class="error-bar hidden"></div>
+    <div id="uploadLoading" class="loading-scr hidden"><div class="l-rings"><div class="lr lr1"></div><div class="lr lr2"></div><div class="lr lr3"></div><span class="lr-ic">🧬</span></div><p>Analyzing extracted values…</p></div>
+    <div id="uploadResults" class="results-wrap hidden"></div>
+  </div>
+</div>
 
-  <!-- <section id="hbResultsSection" class="hidden">
-    <div class="results-topbar">
-      <h2 class="results-title" id="hbResultsTitle">🫀 Heart & ECG Analysis</h2>
-      <button class="btn-reset" onclick="resetHB()">🔄 New Analysis</button>
+<!-- ═══════════════════════════════════════════════════
+     PAGE: HEART CONDITIONS
+     ═══════════════════════════════════════════════════ -->
+<div class="page" id="page-heart">
+  <div class="container">
+    <div class="browser-head">
+      <div class="bh-icon heart">🫀</div>
+      <div>
+        <div class="bh-title">Heart Conditions</div>
+        <div class="bh-sub">10 cardiac conditions with ECG findings, real-world statistics, symptoms, treatments, and lifestyle advice.</div>
+      </div>
     </div>
-    <div id="hbDetectedBanner" class="hb-banner hidden"></div>
-    <div id="hbConditionList" class="hb-condition-list"></div>
-  </section> -->
+    <div class="cond-list" id="heartCondList"></div>
+  </div>
+</div>
 
-</main>
+<!-- ═══════════════════════════════════════════════════
+     PAGE: BRAIN CONDITIONS
+     ═══════════════════════════════════════════════════ -->
+<div class="page" id="page-brain">
+  <div class="container">
+    <div class="browser-head">
+      <div class="bh-icon brain">🧠</div>
+      <div>
+        <div class="bh-title">Brain Conditions</div>
+        <div class="bh-sub">9 neurological conditions with MRI/EEG findings, real-world data, symptoms, treatments, and lifestyle advice.</div>
+      </div>
+    </div>
+    <div class="cond-list" id="brainCondList"></div>
+  </div>
+</div>
 
-<footer class="site-footer">
-  <p>⚠️ <strong>Disclaimer:</strong> This tool is for educational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified doctor.</p>
+<footer>
+  <p>⚠️ <strong>Disclaimer:</strong> Health Simplifier AI is for educational purposes only. Always consult a qualified medical professional.</p>
 </footer>
 
-<script src="script.js"></script>
+<script>
+const PM = {
+  hemoglobin:    {label:"Hemoglobin",        icon:"🩸",unit:"g/dL",      max:22,    nMin:12,     nMax:17.5,  ref:"Normal: 12–17.5 g/dL"},
+  glucose:       {label:"Blood Glucose",     icon:"🍬",unit:"mg/dL",     max:400,   nMin:70,     nMax:100,   ref:"Fasting normal: 70–100 mg/dL"},
+  cholesterol:   {label:"Total Cholesterol", icon:"🫀",unit:"mg/dL",     max:400,   nMin:0,      nMax:200,   ref:"Optimal: below 200 mg/dL"},
+  ldl:           {label:"LDL Cholesterol",   icon:"⚠️",unit:"mg/dL",     max:300,   nMin:0,      nMax:100,   ref:"Optimal: below 100 mg/dL"},
+  hdl:           {label:"HDL Cholesterol",   icon:"💛",unit:"mg/dL",     max:120,   nMin:40,     nMax:60,    ref:"Good: above 60 mg/dL"},
+  triglycerides: {label:"Triglycerides",     icon:"🧈",unit:"mg/dL",     max:600,   nMin:0,      nMax:150,   ref:"Normal: below 150 mg/dL"},
+  bun:           {label:"BUN",               icon:"🫘",unit:"mg/dL",     max:60,    nMin:7,      nMax:20,    ref:"Normal: 7–20 mg/dL"},
+  creatinine:    {label:"Creatinine",        icon:"🧪",unit:"mg/dL",     max:5,     nMin:0.6,    nMax:1.2,   ref:"Normal: 0.6–1.2 mg/dL"},
+  uricAcid:      {label:"Uric Acid",         icon:"🦴",unit:"mg/dL",     max:12,    nMin:3.4,    nMax:7.0,   ref:"Normal: 3.4–7.0 mg/dL"},
+  sodium:        {label:"Sodium (Na⁺)",      icon:"🧂",unit:"mEq/L",     max:160,   nMin:136,    nMax:145,   ref:"Normal: 136–145 mEq/L"},
+  potassium:     {label:"Potassium (K⁺)",    icon:"⚡",unit:"mEq/L",     max:7,     nMin:3.5,    nMax:5.0,   ref:"Normal: 3.5–5.0 mEq/L"},
+  calcium:       {label:"Calcium (Ca²⁺)",    icon:"🦷",unit:"mg/dL",     max:15,    nMin:8.5,    nMax:10.5,  ref:"Normal: 8.5–10.5 mg/dL"},
+  vitaminD:      {label:"Vitamin D",         icon:"☀️",unit:"ng/mL",     max:100,   nMin:20,     nMax:50,    ref:"Sufficient: above 30 ng/mL"},
+  wbc:           {label:"WBC Count",         icon:"🦠",unit:"cells/µL",  max:15000, nMin:4000,   nMax:11000, ref:"Normal: 4000–11000 cells/µL"},
+  rbc:           {label:"RBC Count",         icon:"🔴",unit:"M/µL",      max:7,     nMin:4.0,    nMax:5.5,   ref:"Normal: 4.0–5.5 million/µL"},
+  platelets:     {label:"Platelets",         icon:"🩹",unit:"cells/µL",  max:500000,nMin:150000, nMax:400000,ref:"Normal: 150,000–400,000 cells/µL"},
+  tsh:           {label:"TSH (Thyroid)",     icon:"🦋",unit:"mIU/L",     max:10,    nMin:0.4,    nMax:4.0,   ref:"Normal: 0.4–4.0 mIU/L"},
+};
+const BOUNDS = {
+  hemoglobin:[2,22],glucose:[30,700],cholesterol:[50,700],ldl:[20,500],hdl:[10,120],
+  triglycerides:[30,2000],bun:[2,150],creatinine:[0.2,20],uricAcid:[1,20],
+  sodium:[110,175],potassium:[1.5,9],calcium:[4,18],vitaminD:[2,200],
+  wbc:[500,100000],rbc:[1,8],platelets:[5000,1500000],tsh:[0.01,50],
+};
+const OCR_PAT = {
+  hemoglobin:    [/(?:h(?:a?e?mo?)?globin|hgb?|hb)\s*[:\-\/]?\s*(?:g\/dl)?\s*[:\-]?\s*(\d{1,2}(?:\.\d{1,2})?)/i],
+  glucose:       [/(?:fasting\s+)?(?:blood\s+)?(?:glucose|sugar|f\.?b\.?s\.?|r\.?b\.?s\.?)\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{2,3}(?:\.\d)?)/i],
+  cholesterol:   [/(?:total\s+)?(?:t\.?\s*)?cholesterol\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{2,3}(?:\.\d)?)/i],
+  ldl:           [/l\.?d\.?l\.?\s*(?:cholesterol)?\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{2,3}(?:\.\d)?)/i],
+  hdl:           [/h\.?d\.?l\.?\s*(?:cholesterol)?\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{1,3}(?:\.\d)?)/i],
+  triglycerides: [/(?:triglycerides?|tg)\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{2,4}(?:\.\d)?)/i],
+  bun:           [/(?:blood\s+urea\s+nitrogen|b\.?u\.?n\.?)\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{1,3}(?:\.\d)?)/i],
+  creatinine:    [/creatinine\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{1}(?:\.\d{1,2})?)/i],
+  uricAcid:      [/uric\s*acid\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{1,2}(?:\.\d{1,2})?)/i],
+  sodium:        [/(?:sodium|na\+?)\s*[:\-\(]?\s*(?:m[e]?q\/l)?\s*[:\-]?\s*(\d{3}(?:\.\d)?)/i],
+  potassium:     [/(?:potassium|k\+?)\s*[:\-\(]?\s*(?:m[e]?q\/l)?\s*[:\-]?\s*(\d{1}(?:\.\d{1,2})?)/i],
+  calcium:       [/(?:calcium|ca\+?\+?)\s*[:\-\(]?\s*(?:mg\/dl)?\s*[:\-]?\s*(\d{1,2}(?:\.\d{1,2})?)/i],
+  vitaminD:      [/(?:vitamin\s*d|vit\.?\s*d|25-?oh)\s*[:\-\(]?\s*(?:ng\/ml)?\s*[:\-]?\s*(\d{1,3}(?:\.\d)?)/i],
+  wbc:           [/(?:wbc|white\s*blood\s*cells?)\s*(?:count)?\s*[:\-\(]?\s*(?:cells?\/[µu]?l|\/cmm)?\s*[:\-]?\s*(\d{3,6}(?:\.\d)?)/i],
+  rbc:           [/(?:rbc|red\s*blood\s*cells?)\s*(?:count)?\s*[:\-\(]?\s*(?:million\/[µu]?l|\/cmm)?\s*[:\-]?\s*(\d{1}(?:\.\d{1,2})?)/i],
+  platelets:     [/(?:platelet|plt)\s*(?:count)?\s*[:\-\(]?\s*(?:cells?\/[µu]?l|\/cmm)?\s*[:\-]?\s*(\d{3,7}(?:\.\d)?)/i],
+  tsh:           [/(?:t\.?s\.?h\.?|thyroid\s*stimulating)\s*[:\-\(]?\s*(?:m[i]?u\/l)?\s*[:\-]?\s*(\d{1,3}(?:\.\d{1,3})?)/i],
+};
+
+
+// ════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════
+let addedParams = {};
+let healthChart = null;
+let pendingFile  = null;
+let conditionsLoaded = {};
+
+// ════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════
+function goPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+  const pg = document.getElementById('page-' + page);
+  if (pg) pg.classList.add('active');
+  const btn = document.querySelector('[data-page="' + page + '"]');
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('navLinks').classList.remove('open');
+  if (page === 'heart') renderConditions('heart');
+  if (page === 'brain') renderConditions('brain');
+  setTimeout(initScrollAnimations, 100);
+}
+
+// ════════════════════════════════════════════════════════
+// SCROLL + COUNTER ANIMATIONS
+// ════════════════════════════════════════════════════════
+function initScrollAnimations() {
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
+}
+
+function animateCounters() {
+  var targets = [
+    { id: 'cnt1', val: 17 },
+    { id: 'cnt2', val: 10 },
+    { id: 'cnt3', val: 9  }
+  ];
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (!e.isIntersecting) return;
+      targets.forEach(function(t) {
+        var el = document.getElementById(t.id);
+        if (!el) return;
+        var cur = 0;
+        var step = t.val / 40;
+        var timer = setInterval(function() {
+          cur = Math.min(cur + step, t.val);
+          el.textContent = Math.floor(cur);
+          if (cur >= t.val) clearInterval(timer);
+        }, 30);
+      });
+      obs.disconnect();
+    });
+  }, { threshold: 0.5 });
+  var strip = document.querySelector('.stats-strip');
+  if (strip) obs.observe(strip);
+}
+
+// Navbar scroll effect
+window.addEventListener('scroll', function() {
+  var nb = document.getElementById('navbar');
+  if (nb) nb.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+// Hero video parallax on scroll
+window.addEventListener('scroll', function() {
+  var pg = document.getElementById('page-home');
+  if (!pg || !pg.classList.contains('active')) return;
+  var video = document.getElementById('heroVideo');
+  if (!video) return;
+  var pct = Math.min(window.scrollY / window.innerHeight, 1);
+  video.style.transform = 'scale(' + (1.04 + pct * 0.06) + ')';
+  video.style.filter = 'brightness(' + (0.28 - pct * 0.08) + ') saturate(0.8)';
+}, { passive: true });
+
+
+function addParam() {
+  const key = document.getElementById('paramSelect').value;
+  const raw = document.getElementById('paramValue').value.trim();
+  const err = document.getElementById('fieldErr');
+  err.classList.add('hidden');
+  if (!key)  { err.textContent='Please select a parameter.';    err.classList.remove('hidden'); return; }
+  if (!raw)  { err.textContent='Please enter a value.';          err.classList.remove('hidden'); return; }
+  const val = parseFloat(raw);
+  if (isNaN(val)) { err.textContent='Please enter a valid number.'; err.classList.remove('hidden'); return; }
+  const [lo,hi] = BOUNDS[key];
+  if (val<lo||val>hi) { err.textContent=`Value ${val} is outside valid range (${lo}–${hi}) for ${PM[key].label}.`; err.classList.remove('hidden'); return; }
+  addedParams[key] = val;
+  renderChips();
+  document.getElementById('paramSelect').value = '';
+  document.getElementById('paramValue').value  = '';
+  document.getElementById('refHint').textContent = 'Select a parameter to see its reference range';
+}
+function removeChip(k) { delete addedParams[k]; renderChips(); }
+function clearParams()  { addedParams={}; renderChips(); }
+function renderChips() {
+  const sec = document.getElementById('chipsSection');
+  const row = document.getElementById('chipsRow');
+  const cnt = document.getElementById('chipsCount');
+  const keys = Object.keys(addedParams);
+  if (!keys.length) { sec.classList.add('hidden'); return; }
+  sec.classList.remove('hidden');
+  cnt.textContent = `${keys.length} parameter${keys.length>1?'s':''} added`;
+  row.innerHTML = keys.map(k => {
+    const m = PM[k];
+    return `<div class="chip"><span class="chip-lbl">${m.icon} ${m.label}</span><span class="chip-v">${addedParams[k]}</span><span class="chip-u">${m.unit}</span><button class="chip-x" onclick="removeChip('${k}')">✕</button></div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// UPLOAD — DRAG & DROP
+// ════════════════════════════════════════════════════════════════════════
+function dzEnter(e){ e.preventDefault(); document.getElementById('dropZone').classList.add('dz-over'); document.getElementById('dzOverlay').classList.remove('hidden'); }
+function dzOver(e) { e.preventDefault(); }
+function dzLeave(e){ const z=document.getElementById('dropZone'); if(!z.contains(e.relatedTarget)){z.classList.remove('dz-over');document.getElementById('dzOverlay').classList.add('hidden');} }
+function dzDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('dz-over');
+  document.getElementById('dzOverlay').classList.add('hidden');
+  const f = e.dataTransfer.files[0];
+  if (f) setFile(f);
+}
+function fileSelected(e){ const f=e.target.files[0]; if(f) setFile(f); }
+function setFile(file) {
+  const valid=['image/jpeg','image/png','image/gif','image/webp','application/pdf'];
+  if (!valid.includes(file.type)) { showError('uploadError','Please upload JPG, PNG, or PDF.'); return; }
+  pendingFile = file;
+  document.getElementById('fcIcon').textContent = file.type==='application/pdf'?'📋':'🖼️';
+  document.getElementById('fcName').textContent = file.name;
+  document.getElementById('fcSize').textContent = fmtSize(file.size);
+  document.getElementById('fileCard').classList.remove('hidden');
+  hideErr('uploadError');
+}
+function removeFile() {
+  pendingFile = null;
+  document.getElementById('fileCard').classList.add('hidden');
+  document.getElementById('fileInput').value='';
+  hide('ocrProgress'); hide('ocrPreviewBox'); hide('extChipsBox');
+}
+function fmtSize(b){ return b<1024?b+' B':b<1024*1024?(b/1024).toFixed(1)+' KB':(b/(1024*1024)).toFixed(1)+' MB'; }
+
+async function processUploadedFile() {
+  if (!pendingFile) { showError('uploadError','No file selected.'); return; }
+  show('ocrProgress'); hide('ocrPreviewBox'); hide('extChipsBox');
+  setOCR(5,'Reading file…');
+  try {
+    const url = pendingFile.type==='application/pdf' ? await pdf2img(pendingFile) : await file2url(pendingFile);
+    setOCR(20,'OCR engine loading…');
+    const worker = await Tesseract.createWorker('eng',1,{
+      logger: m => { if(m.status==='recognizing text') setOCR(Math.round(m.progress*60)+25,`Scanning… ${Math.round(m.progress*100)}%`); }
+    });
+    setOCR(88,'Extracting values…');
+    const {data:{text}} = await worker.recognize(url);
+    await worker.terminate();
+    document.getElementById('ocrText').textContent = text.trim()||'(No text detected)';
+    show('ocrPreviewBox');
+    setOCR(100,'Done!');
+    setTimeout(()=>hide('ocrProgress'),600);
+    const vals = ocrExtract(text);
+    // merge into addedParams for reuse
+    for (const [k,v] of Object.entries(vals)) if(v!==null) addedParams[k]=v;
+    renderExtChips(vals);
+    const found = Object.values(vals).filter(v=>v!==null).length;
+    if (!found) { showError('uploadError','⚠️ Could not detect values automatically. Try a clearer image.'); return; }
+    await runAnalysis('upload');
+  } catch(err) {
+    hide('ocrProgress'); showError('uploadError','OCR failed: '+(err.message||'Unknown error'));
+  }
+}
+function renderExtChips(vals) {
+  const row = document.getElementById('extChipsRow');
+  row.innerHTML='';
+  let any=false;
+  for(const [k,v] of Object.entries(vals)) {
+    if(v===null) continue; any=true;
+    const m=PM[k];
+    row.innerHTML+=`<div class="ext-chip"><div class="cl">${m.icon} ${m.label}</div><div class="cv">${v} ${m.unit}</div></div>`;
+  }
+  if(any) show('extChipsBox');
+}
+function setOCR(pct,msg){ document.getElementById('ocrBar').style.width=pct+'%'; document.getElementById('ocrStatus').textContent=msg; }
+function ocrExtract(text) {
+  const t=text.replace(/\n+/g,' ').replace(/\s+/g,' ');
+  const r={};
+  for(const [k,patterns] of Object.entries(OCR_PAT)) {
+    r[k]=null;
+    for(const p of patterns) {
+      const m=t.match(p);
+      if(m){ const v=parseFloat(m[1]); const [lo,hi]=BOUNDS[k]; if(!isNaN(v)&&v>=lo&&v<=hi){r[k]=v;break;} }
+    }
+  }
+  return r;
+}
+function file2url(f){ return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(new Error('Read fail'));r.readAsDataURL(f);}); }
+async function pdf2img(f){
+  if(!window.pdfjsLib){await loadSc('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}
+  const ab=await f.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:ab}).promise;const page=await pdf.getPage(1);
+  const vp=page.getViewport({scale:2});const c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;
+  await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;return c.toDataURL('image/png');
+}
+function loadSc(src){ return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);}); }
+
+// ════════════════════════════════════════════════════════════════════════
+// BLOOD ANALYSIS — call server
+// ════════════════════════════════════════════════════════════════════════
+async function runAnalysis(source) {
+  const data = {...addedParams};
+  const errId  = source==='manual'?'manualError':'uploadError';
+  const loadId = source==='manual'?'manualLoading':'uploadLoading';
+  const resId  = source==='manual'?'manualResults':'uploadResults';
+
+  hideErr(errId); hide(resId);
+  if (!Object.keys(data).length) { showError(errId,'Please add at least one parameter.'); return; }
+
+  show(loadId);
+  try {
+    const res = await fetch('/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(!res.ok) throw new Error('Server error '+res.status);
+    const json = await res.json();
+    hide(loadId); show(resId);
+    renderResults(json, resId);
+  } catch(err) {
+    hide(loadId); showError(errId,'Cannot reach server. Is it running on port 3000?\n'+err.message);
+  }
+}
+
+function renderResults(data, containerId) {
+  const {results,conditions,summary} = data;
+  const c = document.getElementById(containerId);
+
+  // --- Summary Banner ---
+  const icons={danger:'🚨',warning:'⚠️',success:'✅'};
+  const danger  = Object.values(results).filter(r=>r.color==='danger').length;
+  const warning = Object.values(results).filter(r=>r.color==='warning').length;
+  const normal  = Object.values(results).filter(r=>r.color==='success').length;
+
+  let html = `
+    <div class="rt-bar">
+      <h2>📊 Your Analysis</h2>
+      <button class="btn-reset" onclick="resetAnalysis('${containerId}')">🔄 New Analysis</button>
+    </div>
+    <div class="sum-banner ${summary.overallColor}">
+      <div class="sb-ic">${icons[summary.overallColor]}</div>
+      <div>
+        <div class="sb-tt">Overall Health Summary</div>
+        <div class="sb-ds">${summary.overall} <strong>${summary.total}</strong> parameters analyzed.</div>
+        <div class="sb-sts">
+          ${danger?`<span class="sb-st danger">${danger} Critical</span>`:''}
+          ${warning?`<span class="sb-st warning">${warning} Borderline</span>`:''}
+          ${normal?`<span class="sb-st success">${normal} Normal</span>`:''}
+        </div>
+      </div>
+    </div>`;
+
+  // --- Conditions ---
+  if (conditions && conditions.length) {
+    html += `<div class="sec-heading">🚨 Detected Health Conditions</div><div class="cond-alert-grid">`;
+    conditions.forEach((c,i) => {
+      html += `<div class="cond-alert ${c.severity}" style="animation-delay:${i*0.06}s">
+        <div class="ca-h"><span>${c.icon}</span><span class="ca-nm">${c.name}</span><span class="ca-sv">${c.severity==='danger'?'URGENT':'MONITOR'}</span></div>
+        <div class="ca-sm">${c.summary}</div>
+        <div class="ca-ac">💡 ${c.action}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // --- Chart ---
+  const cid = 'chart_'+containerId;
+  html += `<div class="chart-card"><h3>📈 Visual Overview</h3><p>Bar = your value · Dashed = upper normal</p><div class="chart-scroll"><div class="chart-container"><canvas id="${cid}"></canvas></div></div></div>`;
+
+  // --- Param cards ---
+  html += `<div class="sec-heading">🔬 Detailed Analysis</div><div class="param-grid">`;
+  const ordered = Object.entries(results).sort((a,b)=>({danger:0,warning:1,success:2}[a[1].color]-{danger:0,warning:1,success:2}[b[1].color]));
+  ordered.forEach(([key,r],i) => {
+    const m=PM[key]; if(!m) return;
+    const pct=Math.min((r.value/m.max)*100,100).toFixed(1);
+    html += `<div class="param-card" style="animation-delay:${i*0.05}s">
+      <div class="pc-h ${r.color}">
+        <span class="pc-ic">${m.icon}</span>
+        <div class="pc-inf"><div class="pc-nm">${m.label}</div><span class="pc-badge pb-${r.color}">${r.status}</span></div>
+        <div class="pc-vl"><div class="pc-n ${r.color}">${r.value}</div><div class="pc-u">${m.unit}</div></div>
+      </div>
+      <div class="pc-bd">
+        <div class="pc-ex ${r.color}">${r.explanation}</div>
+        <div class="mini-b">
+          <div class="mini-bl"><span>0</span><span>Normal ${m.nMin}–${m.nMax} ${m.unit}</span><span>${m.max}+</span></div>
+          <div class="mini-bg"><div class="mini-bf ${r.color}" style="width:0%" data-target="${pct}%"></div></div>
+        </div>
+        <div class="adv-grid">
+          <div class="adv-box adv-eat"><div class="adv-ttl">✅ What to Consume</div><ul class="adv-list">${r.consume.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+          <div class="adv-box adv-avd"><div class="adv-ttl">🚫 What to Avoid</div><ul class="adv-list">${r.avoid.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+        </div>
+      </div>
+    </div>`;
+  });
+  html += `</div>`;
+  c.innerHTML = html;
+
+  // Animate bars
+  setTimeout(()=>{ c.querySelectorAll('.mini-bar-fill[data-target]').forEach(el=>el.style.width=el.dataset.target); },120);
+
+  // Draw chart
+  drawChart(results, cid);
+}
+
+function drawChart(results, canvasId) {
+  if (healthChart) { healthChart.destroy(); healthChart=null; }
+  const canvas = document.getElementById(canvasId); if(!canvas) return;
+  const labels=[],vals=[],colors=[],normals=[];
+  const cm={success:'#00d4aa',warning:'#ffb347',danger:'#ff6b6b'};
+  for(const [k,r] of Object.entries(results)){const m=PM[k];if(!m)continue;labels.push(m.label);vals.push(r.value);colors.push(cm[r.color]);normals.push(m.nMax);}
+  const w=Math.max(480,labels.length*72);
+  document.getElementById(canvasId).parentElement.style.width=w+'px';
+  healthChart=new Chart(canvas,{type:'bar',data:{labels,datasets:[
+    {label:'Your Value',data:vals,backgroundColor:colors.map(c=>c+'bb'),borderColor:colors,borderWidth:2,borderRadius:8,borderSkipped:false},
+    {label:'Upper Normal',data:normals,type:'line',borderColor:'rgba(100,140,180,0.45)',borderWidth:1.5,borderDash:[6,4],pointStyle:false,fill:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.datasetIndex===0?` Your value: ${ctx.raw}`:` Upper normal: ${ctx.raw}`}}},
+    scales:{
+      y:{beginAtZero:true,grid:{color:'rgba(30,48,80,0.7)'},ticks:{color:'#3d5a78',font:{family:"'DM Sans', sans-serif",size:11}}},
+      x:{grid:{display:false},ticks:{color:'#3d5a78',font:{family:"'DM Sans', sans-serif",size:10},maxRotation:45}}
+    }
+  }});
+}
+
+function resetAnalysis(containerId) {
+  hide(containerId);
+  addedParams={};
+  renderChips();
+  pendingFile=null;
+  document.getElementById('fileCard')?.classList.add('hidden');
+  if(healthChart){healthChart.destroy();healthChart=null;}
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// HEART & BRAIN CONDITIONS
+// ════════════════════════════════════════════════════════════════════════
+async function renderConditions(type) {
+  const listId = type+'CondList';
+  const el = document.getElementById(listId);
+  if (conditionsLoaded[type]) return; // already rendered
+
+  el.innerHTML = `<div class="loading-scr"><div class="l-rings"><div class="lr lr1"></div><div class="lr lr2"></div><div class="lr lr3"></div><span class="lr-ic">${type==='heart'?'🫀':'🧠'}</span></div><p>Loading conditions…</p></div>`;
+
+  try {
+    const res  = await fetch(`/conditions/${type}`);
+    const data = await res.json();
+    el.innerHTML = '';
+    conditionsLoaded[type] = true;
+
+    data.conditions.forEach((cond,i) => {
+      const cardType = type+'-card';
+      const div = document.createElement('div');
+      div.className = `cond-card ${cardType}`;
+      div.style.animationDelay = (i*0.06)+'s';
+      div.id = `cc-${type}-${i}`;
+      const sev = cond.severity==='danger'?'🔴 Serious':'🟡 Important';
+
+      div.innerHTML = `
+        <div class="cond-head" onclick="toggleCond(this)">
+          <span class="cond-em">${cond.icon}</span>
+          <div class="cond-meta">
+            <div class="cond-nm">${cond.name}</div>
+            <div class="cond-cl">${type==='heart'?'Cardiology':'Neurology'} • ${cond.category}</div>
+            <div class="cond-bgs"><span class="cond-badge badge-${cond.severity}">${sev}</span></div>
+          </div>
+          <span class="cond-tog">▼</span>
+        </div>
+        <div class="cond-body">
+          <div class="ecg-box">
+            <div class="ecg-ttl">📊 ${type==='heart'?'ECG / DIAGNOSTIC FINDINGS':'SCAN / EEG FINDINGS'}</div>
+            <div class="ecg-txt">${cond.ecgFindings}</div>
+          </div>
+          <div class="rd-box">
+            <div class="rd-ttl">📰 REAL-WORLD DATA & STATISTICS</div>
+            <div class="rd-txt">${cond.realWorldData}</div>
+          </div>
+          <div class="cond-expl">${cond.explanation}</div>
+          <div class="c4g">
+            <div class="cs cs-s">
+              <div class="cs-ttl">🔴 Symptoms</div>
+              <ul class="cs-list">${cond.symptoms.map(s=>`<li>${s}</li>`).join('')}</ul>
+            </div>
+            <div class="cs cs-r">
+              <div class="cs-ttl">⚠️ Risk Factors</div>
+              <ul class="cs-list">${cond.riskFactors.map(s=>`<li>${s}</li>`).join('')}</ul>
+            </div>
+            <div class="cs cs-t">
+              <div class="cs-ttl">💊 Treatment</div>
+              <ul class="cs-list">${cond.treatment.map(s=>`<li>${s}</li>`).join('')}</ul>
+            </div>
+            <div class="cs cs-l">
+              <div class="cs-ttl">🌿 Lifestyle</div>
+              <ul class="cs-list">${cond.lifestyle.map(s=>`<li>${s}</li>`).join('')}</ul>
+            </div>
+          </div>
+        </div>`;
+      el.appendChild(div);
+    });
+  } catch(err) {
+    el.innerHTML = `<div class="error-bar">Failed to load conditions. Make sure the server is running.</div>`;
+  }
+}
+
+function toggleCond(head) { head.parentElement.classList.toggle('open'); }
+
+// ════════════════════════════════════════════════════════════════════════
+// UTILITIES
+// ════════════════════════════════════════════════════════════════════════
+function show(id)       { document.getElementById(id)?.classList.remove('hidden'); }
+function hide(id)       { document.getElementById(id)?.classList.add('hidden'); }
+function hideErr(id)    { hide(id); }
+function showError(id,msg){ const el=document.getElementById(id); if(el){el.textContent=msg;el.classList.remove('hidden');} }
+
+// ════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  initScrollAnimations();
+  animateCounters();
+
+  // Ensure video plays muted (required for autoplay on mobile)
+  var vid = document.getElementById('heroVideo');
+  if (vid) {
+    vid.muted = true;
+    vid.volume = 0;
+    vid.play().catch(function() {});
+  }
+
+  // Param select change handler
+  var sel = document.getElementById('paramSelect');
+  if (sel) {
+    sel.addEventListener('change', function() {
+      var m = PM[this.value];
+      var hint = document.getElementById('refHint');
+      if (hint) hint.textContent = m ? m.ref : 'Select a parameter to see its reference range';
+      var vi = document.getElementById('paramValue');
+      if (vi) {
+        vi.placeholder = m ? ('e.g. value in ' + m.unit) : 'e.g. 13.2';
+        if (m) vi.focus();
+      }
+    });
+  }
+});
+
+</script>
 </body>
 </html>
